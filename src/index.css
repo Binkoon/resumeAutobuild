@@ -10,6 +10,10 @@
 @import './styles/cv-controls.css';
 @import './styles/footer.css';
 @import './styles/intro.css';
+@import './styles/translator.css';
+@import './styles/datepicker.css';
+@import './styles/breadcrumb.css';
+@import './styles/draft-manager.css';
 
 /* 3. 모달팝업 스타일 (최상위 우선순위) */
 @import './styles/modal.css';

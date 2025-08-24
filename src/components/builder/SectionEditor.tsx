@@ -349,11 +349,6 @@ export function SectionEditor({ type }: SectionEditorProps) {
   return (
     <div className="section">
       <div className="section-header">
-        <h3 className="section-title">
-          {type === 'experience' && '경력사항'}
-          {type === 'education' && '교육사항'}
-          {type === 'project' && '프로젝트'}
-        </h3>
         <button
           onClick={addItem}
           className={`btn ${getButtonClassByType(type)}`}

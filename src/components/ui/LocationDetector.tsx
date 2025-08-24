@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useGeolocation } from '../../lib/hooks';
 
 interface LocationDetectorProps {
@@ -8,10 +8,12 @@ interface LocationDetectorProps {
 
 export function LocationDetector({ onLocationDetected, className = '' }: LocationDetectorProps) {
   const { isLoading, error, getCurrentLocation } = useGeolocation();
+  const [lastDetectedLocation, setLastDetectedLocation] = useState<string>('');
 
   const handleDetectLocation = async () => {
     const location = await getCurrentLocation();
     if (location) {
+      setLastDetectedLocation(location);
       onLocationDetected(location);
     }
   };

@@ -6,19 +6,29 @@ export type DownloadFormat = 'pdf' | 'markdown' | 'html';
 /**
  * CV를 선택한 형식으로 다운로드
  */
-export async function downloadCV(cvData: CVData, format: DownloadFormat): Promise<void> {
-  switch (format) {
-    case 'pdf':
-      await downloadAsPDF(cvData);
-      break;
-    case 'markdown':
-      downloadAsMarkdown(cvData);
-      break;
-    case 'html':
-      downloadAsHTML(cvData);
-      break;
-    default:
-      throw new Error(`지원하지 않는 형식: ${format}`);
+export async function downloadCV(cvData: CVData, format: DownloadFormat, onComplete?: () => void): Promise<void> {
+  try {
+    switch (format) {
+      case 'pdf':
+        await downloadAsPDF(cvData);
+        break;
+      case 'markdown':
+        downloadAsMarkdown(cvData);
+        break;
+      case 'html':
+        downloadAsHTML(cvData);
+        break;
+      default:
+        throw new Error(`지원하지 않는 형식: ${format}`);
+    }
+    
+    // 다운로드 완료 후 콜백 실행 (초기화 등)
+    if (onComplete) {
+      onComplete();
+    }
+  } catch (error) {
+    console.error('다운로드 실패:', error);
+    throw error;
   }
 }
 

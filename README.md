@@ -80,7 +80,7 @@ src/
 ## 🛠️ 기술 스택
 
 - **Frontend**: React 18 + TypeScript
-- **Styling**: Tailwind CSS
+- **Styling**: CSS
 - **Build Tool**: Vite
 - **Package Manager**: npm
 
@@ -112,7 +112,7 @@ Zustand를 사용한 상태 관리로 `src/stores/` 디렉토리에서 CV 데이
 `src/lib/ai.ts`에서 OpenAI API 연동을 구현할 수 있습니다.
 
 ### 스타일링
-Tailwind CSS를 사용하여 일관된 디자인 시스템을 유지합니다.
+Tailwind CSS x -> 전통 css로 바꾸었습니다.
 
 ## 📄 라이선스
 
@@ -120,5 +120,4 @@ Tailwind CSS를 사용하여 일관된 디자인 시스템을 유지합니다.
 
 ## 📅 개발 히스토리
 
-- **2025-01-XX** - ver 1.1.0: 개발자 시그니처 화면 추가, PDF 다운로드 기능 구현
-- **2025-08-24** - ver 1.0.0: 최초 개발
+- **2025-08-24** - ver 1.1.0: 개발자 시그니처 화면 추가, PDF 다운로드 기능 구현

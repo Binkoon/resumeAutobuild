@@ -85,6 +85,9 @@ interface CVStore {
   importCV: (data: CVData) => void;
   exportCV: () => CVData;
   
+  // CV 완성 후 초기화 (자동저장 포함)
+  resetAfterCompletion: () => void;
+  
   // CV 타입별 초기화
   initializeCVType: (type: CVType) => void;
 }
@@ -534,6 +537,17 @@ export const useCVStore = create<CVStore>()(
       
       exportCV: () => {
         return get().cvData;
+      },
+      
+      // CV 완성 후 초기화 (자동저장 포함)
+      resetAfterCompletion: () => {
+        const currentType = get().cvData.type;
+        set({ cvData: createInitialCVData(currentType) });
+        
+        // 자동저장 및 임시저장 초기화
+        import('../lib/autosave').then(({ resetAfterCompletion }) => {
+          resetAfterCompletion();
+        });
       },
       
       // CV 타입별 초기화
