@@ -135,6 +135,43 @@
   transform: none;
 }
 
+/* 번역 상태 표시 스타일 */
+.translation-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.translation-status.success {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.translation-status.error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.status-icon {
+  font-size: 1rem;
+}
+
+.status-text {
+  font-weight: 600;
+}
+
+.error-message {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  font-style: italic;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 640px) {
   .translator-container {

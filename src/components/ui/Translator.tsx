@@ -13,11 +13,16 @@ export function Translator({ onTranslate, placeholder = "번역할 텍스트를 
   const [fromLang, setFromLang] = useState('ko');
   const [toLang, setToLang] = useState('en');
   const [isTranslating, setIsTranslating] = useState(false);
+  const [translationStatus, setTranslationStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleTranslate = async () => {
     if (!inputText.trim()) return;
 
     setIsTranslating(true);
+    setTranslationStatus('idle');
+    setErrorMessage('');
+    
     try {
       const request: TranslationRequest = {
         text: inputText,
@@ -25,15 +30,30 @@ export function Translator({ onTranslate, placeholder = "번역할 텍스트를 
         to: toLang,
       };
 
+      console.log('번역 시작:', request);
       const response = await translateWithLibreTranslate(request);
-      setTranslatedText(response.translatedText);
       
-      if (onTranslate) {
-        onTranslate(response.translatedText);
+      if (response.success) {
+        setTranslatedText(response.translatedText);
+        setTranslationStatus('success');
+        
+        if (response.error) {
+          setErrorMessage(response.error);
+        }
+        
+        if (onTranslate) {
+          onTranslate(response.translatedText);
+        }
+      } else {
+        setTranslatedText(inputText);
+        setTranslationStatus('error');
+        setErrorMessage(response.error || '알 수 없는 오류가 발생했습니다.');
       }
     } catch (error) {
       console.error('Translation failed:', error);
-      setTranslatedText('번역에 실패했습니다.');
+      setTranslatedText(inputText);
+      setTranslationStatus('error');
+      setErrorMessage('번역 중 오류가 발생했습니다.');
     } finally {
       setIsTranslating(false);
     }
@@ -44,10 +64,23 @@ export function Translator({ onTranslate, placeholder = "번역할 텍스트를 
     setToLang(fromLang);
     setInputText(translatedText);
     setTranslatedText(inputText);
+    setTranslationStatus('idle');
+    setErrorMessage('');
   };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
+  };
+
+  const getStatusIcon = () => {
+    switch (translationStatus) {
+      case 'success':
+        return '✅';
+      case 'error':
+        return '❌';
+      default:
+        return '';
+    }
   };
 
   return (
@@ -114,6 +147,19 @@ export function Translator({ onTranslate, placeholder = "번역할 텍스트를 
         >
           {isTranslating ? '번역 중...' : '번역하기'}
         </button>
+
+        {/* 상태 표시 */}
+        {translationStatus !== 'idle' && (
+          <div className={`translation-status ${translationStatus}`}>
+            <span className="status-icon">{getStatusIcon()}</span>
+            <span className="status-text">
+              {translationStatus === 'success' ? '번역 완료' : '번역 실패'}
+            </span>
+            {errorMessage && (
+              <span className="error-message">({errorMessage})</span>
+            )}
+          </div>
+        )}
 
         <div className="output-section">
           <textarea

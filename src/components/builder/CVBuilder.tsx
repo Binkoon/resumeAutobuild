@@ -412,6 +412,8 @@ export function CVBuilder() {
           }}
           isDownloadReady={isDownloadReady()}
           isLoading={isLoading}
+          downloadFormat={downloadFormat}
+          onDownloadFormatChange={(format: string) => setDownloadFormat(format as 'pdf' | 'markdown' | 'html')}
         />
         
         {/* 에러 표시 */}

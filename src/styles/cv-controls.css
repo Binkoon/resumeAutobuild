@@ -687,6 +687,43 @@
   height: 16px;
 }
 
+/* 다운로드 형식 선택기 */
+.download-format-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: 1rem;
+}
+
+.format-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.format-select {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 0.75rem;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+
+.format-select:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.format-select option {
+  background: #374151;
+  color: white;
+}
+
 /* 반응형 디자인 */
 @media (max-width: 1024px) {
   .template-info {
@@ -783,6 +820,13 @@
   }
   
   .header-action-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .download-format-selector {
+    margin-right: 0;
+    margin-bottom: 0.5rem;
     width: 100%;
     justify-content: center;
   }

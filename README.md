@@ -1,90 +1,113 @@
-# CV 자동 빌더 (Resume Auto Builder)
+# CV 자동 빌더 (CV Auto Builder)
 
-AI 기반 이력서 자동 생성 웹 애플리케이션입니다. 사용자가 입력한 정보를 바탕으로 실시간으로 이력서를 미리보기하고, AI 제안을 통해 더 나은 내용을 작성할 수 있도록 도와줍니다.
+**Version:** 1.0.3  
+**Last Updated:** 2024년 12월 19일
 
-## ✨ 특징
+AI 기반 이력서 작성 도구로 전문적이고 매력적인 이력서를 만들어보세요.
 
-- **개발자 시그니처 화면**: 앱 시작 시 아름다운 인트로 애니메이션
-- **AI 기반 자동완성**: 스마트한 텍스트 제안 및 자동완성
-- **실시간 미리보기**: 입력하는 즉시 이력서 형태로 확인
-- **반응형 디자인**: 모든 디바이스에서 최적화된 경험
+## ✨ 주요 기능
+
+### 📝 CV 작성 및 편집
+- **개인정보 입력**: 이름, 이메일, 전화번호, 위치, LinkedIn, GitHub
+- **스킬 관리**: 드롭다운 선택 및 직접 입력 지원
+- **언어 능력**: 다국어 지원 및 수준 표시
+- **경력사항**: 회사명, 직책, 기간, 업무 내용
+- **교육사항**: 학교, 전공, 학위, 졸업일
+- **프로젝트**: 프로젝트명, 기술스택, 설명, 기간
+
+### 🎨 CV 템플릿
+- **역순 연대기형**: 경력 중심의 표준 이력서
+- **기능형**: 스킬과 역량 중심
+- **혼합형**: 스킬과 경력을 균형있게
+- **학문형**: 학술 연구 중심
+- **크리에이티브**: 디자인과 창의성 중심
+
+### 💾 데이터 관리
+- **임시저장**: 로컬스토리지 기반 자동 저장
+- **데이터 복원**: 이전 작업 내용 자동 복구
+- **진행률 표시**: 실시간 CV 작성 진행 상황
+- **섹션별 완료 상태**: 각 섹션별 입력 완료 여부
+
+### 📤 출력 및 다운로드
+- **PDF 형식**: 인쇄 및 공유에 최적화
+- **Markdown 형식**: GitHub, Notion 등에서 편집
+- **HTML 형식**: 웹 브라우저에서 열기
+- **실시간 미리보기**: A4 크기 최적화
+
+### 🌐 부가 기능
+- **번역 도구**: 다국어 입력 지원
+- **위치 자동 감지**: IP 기반 위치 자동 설정
+- **ATS 친화적**: 채용시스템 최적화
 
 ## 🏗️ 프로젝트 구조
 
+### 📁 컴포넌트 구조
 ```
 src/
 ├── components/
-│   ├── builder/                    # CV 빌더 관련 컴포넌트
-│   │   ├── CVBuilder.tsx          # 메인 빌더 컨테이너 (상태 관리 + 섹션 컴포넌트 호출)
-│   │   ├── GhostTextarea.tsx      # AI 추천 + Tab 확장 지원 텍스트에어리어
-│   │   ├── SectionEditor.tsx      # Experience/Education/Project 공통 에디터
-│   │   ├── TemplateSelector.tsx   # 이력서 템플릿 선택기
-│   │   └── Preview.tsx            # 오른쪽 CV 미리보기 (A4 레이아웃)
-│   └── ui/                        # 재사용 가능한 UI 컴포넌트
-│       ├── IntroPage.tsx          # 개발자 시그니처 인트로 화면
-│       ├── Footer.tsx             # 푸터 컴포넌트
-│       ├── LocationDetector.tsx   # 위치 기반 정보 자동 입력
-│       ├── SkillDropdown.tsx      # 스킬 선택 드롭다운
-│       └── button.tsx             # Button 컴포넌트 (shadcn/ui 스타일)
-│
-├── lib/                           # 비즈니스 로직 및 유틸리티
-│   ├── ai.ts                      # AI 관련 함수 (suggest, getAutocompleteSuggestions)
-│   ├── download.ts                # PDF 다운로드 기능
-│   ├── hooks.ts                   # useAIAutocomplete, useDebounce 커스텀 훅
-│   ├── markdown.ts                # buildMarkdown, nl, fmt 등 텍스트 유틸리티
-│   └── validation.ts              # 폼 유효성 검사
-│
-├── types/                         # TypeScript 타입 정의
-│   └── cv.ts                      # ExperienceItem, EduItem, ProjectItem, PersonalInfo, CVData 인터페이스
-│
-├── pages/                         # 페이지 컴포넌트
-│   └── index.tsx                  # 진입점 (CVBuilder 불러오기)
-│
-├── stores/                        # 상태 관리
-│   ├── cvStore.ts                 # CV 데이터 상태 관리
-│   ├── uiStore.ts                 # UI 상태 관리
-│   └── index.ts                   # 스토어 통합
-│
-├── App.tsx                        # 메인 앱 컴포넌트
-└── main.tsx                       # React 앱 진입점
+│   ├── builder/           # CV 빌더 핵심 컴포넌트
+│   │   ├── CVBuilder.tsx      # 메인 빌더 컴포넌트
+│   │   ├── SectionRenderer.tsx # 섹션별 렌더링
+│   │   ├── SectionEditor.tsx   # 섹션 편집기
+│   │   ├── Preview.tsx         # 실시간 미리보기
+│   │   ├── TemplateSelector.tsx # 템플릿 선택
+│   │   └── GhostTextarea.tsx   # 스마트 텍스트 입력
+│   └── ui/                # 공통 UI 컴포넌트
+│       ├── Header.tsx          # 헤더 (진행률, 액션 버튼)
+│       ├── Footer.tsx          # 푸터
+│       ├── Translator.tsx      # 번역 도구
+│       ├── LocationDetector.tsx # 위치 감지
+│       ├── SkillDropdown.tsx   # 스킬 선택 드롭다운
+│       └── button.tsx          # 버튼 컴포넌트
 ```
 
-## 🚀 주요 기능
+### 📁 상태 관리
+```
+src/
+├── stores/                # Zustand 상태 관리
+│   ├── cvStore.ts            # CV 데이터 상태
+│   ├── uiStore.ts            # UI 상태 (로딩, 에러)
+│   └── index.ts              # 스토어 통합
+```
 
-### 1. 개발자 시그니처 화면
-- **IntroPage**: 앱 시작 시 아름다운 애니메이션과 함께 개발자 시그니처 표시
-- **언제든 재시청**: "Intro 다시보기" 버튼으로 언제든지 인트로 화면 재시청 가능
+### 📁 타입 및 유틸리티
+```
+src/
+├── types/                 # TypeScript 타입 정의
+│   └── cv.ts                 # CV 관련 타입
+├── lib/                   # 유틸리티 함수
+│   ├── download.ts            # CV 다운로드
+│   ├── validation.ts          # 입력 검증
+│   └── hooks.ts               # 커스텀 훅
+└── data/                   # 정적 데이터
+    └── skills.ts              # 스킬 목록
+```
 
-### 2. AI 기반 자동완성
-- **GhostTextarea**: AI가 제안하는 텍스트를 실시간으로 표시
-- **Tab 키 확장**: Tab 키를 눌러 AI 제안을 자동으로 적용
-- **컨텍스트 기반 제안**: 입력 중인 내용을 바탕으로 관련성 높은 제안
+### 📁 스타일링
+```
+src/
+├── styles/                # CSS 스타일
+│   ├── cv-controls.css        # CV 컨트롤 스타일
+│   ├── forms.css              # 폼 스타일
+│   ├── global.css             # 전역 스타일
+│   └── layout.css             # 레이아웃 스타일
+```
 
-### 3. 섹션별 편집
-- **개인정보**: 이름, 연락처, 소셜 링크, 자기소개
-- **경력사항**: 회사, 직책, 기간, 업무 설명, 성과
-- **교육사항**: 학교, 학위, 전공, GPA, 관련 과목
-- **프로젝트**: 프로젝트명, 기술스택, GitHub/Live Demo 링크
-- **스킬 & 언어**: 태그 형태로 관리
+## 🚀 기술 스택
 
-### 4. 실시간 미리보기
-- **A4 레이아웃**: 실제 인쇄 시와 동일한 형태로 미리보기
-- **반응형 디자인**: 데스크톱과 모바일 모두 지원
-- **실시간 업데이트**: 입력하는 즉시 미리보기 반영
+- **Frontend**: React 18, TypeScript
+- **상태관리**: Zustand
+- **스타일링**: CSS (모듈화)
+- **빌드도구**: Vite
+- **패키지관리**: npm
 
-### 5. 추가 기능
-- **PDF 다운로드**: 완성된 이력서를 PDF로 다운로드
-- **위치 기반 정보**: 사용자 위치를 자동으로 감지하여 정보 입력
-- **템플릿 선택**: 다양한 이력서 템플릿 중 선택 가능
+## 📱 반응형 디자인
 
-## 🛠️ 기술 스택
+- **데스크톱**: 2열 그리드 레이아웃 (편집 + 미리보기)
+- **태블릿**: 적응형 그리드
+- **모바일**: 세로 스택 레이아웃
 
-- **Frontend**: React 18 + TypeScript
-- **Styling**: CSS
-- **Build Tool**: Vite
-- **Package Manager**: npm
-
-## 📦 설치 및 실행
+## 🔧 개발 환경 설정
 
 ```bash
 # 의존성 설치
@@ -96,28 +119,18 @@ npm run dev
 # 빌드
 npm run build
 
-# 빌드 결과 미리보기
-npm run preview
+# 타입 체크
+npm run type-check
 ```
 
-## 🔧 개발 가이드
+## 📋 사용법
 
-### 컴포넌트 추가
-새로운 UI 컴포넌트는 `src/components/ui/` 디렉토리에 추가하세요.
+1. **CV 설정**: 원하는 템플릿 선택
+2. **정보 입력**: 각 섹션별로 정보 입력
+3. **실시간 확인**: 오른쪽에서 미리보기 확인
+4. **임시저장**: 작업 중간에 자동 저장
+5. **다운로드**: 완성된 CV를 원하는 형식으로 다운로드
 
-### 상태 관리
-Zustand를 사용한 상태 관리로 `src/stores/` 디렉토리에서 CV 데이터와 UI 상태를 관리합니다.
+## �� 라이선스
 
-### AI 기능 확장
-`src/lib/ai.ts`에서 OpenAI API 연동을 구현할 수 있습니다.
-
-### 스타일링
-Tailwind CSS x -> 전통 css로 바꾸었습니다.
-
-## 📄 라이선스
-
-이 프로젝트는 MIT 라이선스 하에 배포됩니다.
-
-## 📅 개발 히스토리
-
-- **2025-08-24** - ver 1.1.0: 개발자 시그니처 화면 추가, PDF 다운로드 기능 구현
+MIT License

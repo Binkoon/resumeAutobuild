@@ -15,6 +15,8 @@ interface HeaderProps {
   onSaveDraft: () => void;
   isDownloadReady: boolean;
   isLoading: boolean;
+  downloadFormat: string;
+  onDownloadFormatChange: (format: string) => void;
 }
 
 export function Header({ 
@@ -27,7 +29,9 @@ export function Header({
   onReset,
   onSaveDraft,
   isDownloadReady,
-  isLoading
+  isLoading,
+  downloadFormat,
+  onDownloadFormatChange
 }: HeaderProps) {
   return (
     <div className="main-header">
@@ -81,6 +85,21 @@ export function Header({
           
           {/* 헤더 액션 버튼들 */}
           <div className="header-actions">
+            {/* 다운로드 형식 선택 */}
+            <div className="download-format-selector">
+              <label htmlFor="download-format" className="format-label">형식:</label>
+              <select
+                id="download-format"
+                value={downloadFormat}
+                onChange={(e) => onDownloadFormatChange(e.target.value)}
+                className="format-select"
+              >
+                <option value="pdf">PDF (권장)</option>
+                <option value="markdown">Markdown</option>
+                <option value="html">HTML</option>
+              </select>
+            </div>
+            
             <button
               onClick={onSaveDraft}
               className="header-action-btn header-save-btn"
