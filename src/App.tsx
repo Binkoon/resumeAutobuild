@@ -4,22 +4,9 @@ import { IntroPage } from './components/ui/IntroPage';
 
 function App() {
   const [showIntro, setShowIntro] = useState(true);
-  const [hasSeenIntro, setHasSeenIntro] = useState(false);
-
-  useEffect(() => {
-    // 로컬 스토리지에서 인트로 표시 여부 확인
-    const hasSeen = localStorage.getItem('hasSeenIntro');
-    if (hasSeen === 'true') {
-      setShowIntro(false);
-      setHasSeenIntro(true);
-    }
-  }, []);
 
   const handleIntroComplete = () => {
     setShowIntro(false);
-    setHasSeenIntro(true);
-    // 로컬 스토리지에 표시 완료 기록
-    localStorage.setItem('hasSeenIntro', 'true');
   };
 
   // 인트로 페이지 표시
@@ -31,6 +18,25 @@ function App() {
   return (
     <div className="App">
       <HomePage />
+      {/* IntroPage를 다시 보는 버튼 */}
+      <button 
+        onClick={() => setShowIntro(true)}
+        style={{
+          position: 'fixed',
+          bottom: '20px',
+          right: '20px',
+          zIndex: 1000,
+          padding: '10px 15px',
+          backgroundColor: '#007bff',
+          color: 'white',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+          fontSize: '14px'
+        }}
+      >
+        Intro 다시보기
+      </button>
     </div>
   );
 }
