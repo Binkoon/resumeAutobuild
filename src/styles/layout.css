@@ -1,0 +1,316 @@
+/* ===== CSS 구조 리뉴얼 ===== */
+
+/* 1. 기본 레이아웃 구조 */
+.main-layout {
+  display: grid;
+  grid-template-columns: 200px 1fr 200px;
+  gap: 32px;
+  max-width: 2200px; /* 1800px에서 2200px로 확장 */
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 48px;
+}
+
+.main-content {
+  grid-column: 2;
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+}
+
+/* 2. 카드 시스템 - 통일된 구조 */
+.card {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f1f5f9;
+  margin-bottom: 24px;
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  overflow: visible;
+  position: relative;
+}
+
+.card-body {
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 3. 섹션 시스템 */
+.section {
+  margin-bottom: 24px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.section-content {
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
+  padding: 0;
+  gap: 16px;
+}
+
+.section-header h2,
+.section-header .section-title {
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.section-header .btn {
+  margin: 0;
+  padding: 8px 16px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* 4. 섹션 아이템 */
+.section-item {
+  padding: 20px;
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.section-item:last-child {
+  border-bottom: none;
+}
+
+.section-item:hover {
+  background-color: #f8fafc;
+}
+
+.section-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.section-item-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.section-item-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.section-item-content {
+  color: #64748b;
+  line-height: 1.6;
+  width: 100%;
+}
+
+.section-item-content p {
+  margin-bottom: 8px;
+}
+
+.section-item-content strong {
+  color: #475569;
+}
+
+/* 5. 편집 모드 */
+.section-item-editing {
+  background-color: #f8fafc;
+  border: 2px solid #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.section-item-editing .section-item-content {
+  padding: 20px;
+  background-color: white;
+  border-radius: 12px;
+  margin-top: 16px;
+}
+
+/* 6. 빈 상태 */
+.section-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #94a3b8;
+  background-color: #f8fafc;
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  width: 100%;
+}
+
+.section-empty svg {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  color: #cbd5e1;
+}
+
+.section-empty-text {
+  font-size: 16px;
+  color: #64748b;
+}
+
+/* 7. 미리보기 카드 */
+.preview-card {
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 16px;
+  margin-bottom: 16px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f1f5f9;
+}
+
+.preview-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.preview-description {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+/* 8. 메인 헤더 */
+.main-header {
+  text-align: center;
+  padding: 40px 0;
+  margin-bottom: 24px;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  width: 100%;
+  max-width: 100%;
+}
+
+.main-title {
+  font-size: 36px;
+  font-weight: bold;
+  color: #1e293b;
+  margin-bottom: 16px;
+}
+
+.main-subtitle {
+  font-size: 18px;
+  color: #64748b;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* 9. 미니멀 배경 */
+.minimal {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  min-height: 100vh;
+  padding: 24px 0;
+}
+
+/* 10. 카드 제목 */
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.card-title svg {
+  width: 20px;
+  height: 20px;
+  color: #64748b;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1800px) {
+  .main-layout {
+    grid-template-columns: 180px 1fr 180px;
+    gap: 28px;
+    padding: 0 44px;
+  }
+}
+
+@media (max-width: 1400px) {
+  .main-layout {
+    grid-template-columns: 160px 1fr 160px;
+    gap: 24px;
+    padding: 0 40px;
+  }
+  
+  .card {
+    margin-bottom: 20px;
+  }
+  
+  .section {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .main-layout {
+    grid-template-columns: 140px 1fr 140px;
+    gap: 20px;
+    padding: 0 32px;
+  }
+  
+  .card {
+    margin-bottom: 20px;
+  }
+  
+  .section {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0 16px;
+  }
+  
+  .main-content {
+    grid-column: 1;
+  }
+  
+  .card {
+    margin-bottom: 16px;
+  }
+  
+  .section {
+    margin-bottom: 16px;
+  }
+  
+  .card-body {
+    padding: 16px;
+  }
+  
+  .section-item {
+    padding: 16px;
+  }
+}

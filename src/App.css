@@ -1,0 +1,233 @@
+/* ===== 앱 전체 레이아웃 스타일 ===== */
+
+/* 루트 컨테이너 */
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* 메인 컨테이너 - 광고 공간 고려 */
+.container {
+  max-width: 2200px; /* 1800px에서 2200px로 확장 */
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 48px;
+}
+
+/* 광고 공간을 위한 메인 레이아웃 */
+.main-layout {
+  display: grid;
+  grid-template-columns: 200px 1fr 200px; /* 180px에서 200px로 복원하여 균형 맞춤 */
+  gap: 32px; /* 24px에서 32px로 복원하여 여유 공간 확보 */
+  max-width: 2200px; /* 1800px에서 2200px로 확장 */
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 48px;
+}
+
+/* 메인 콘텐츠 영역 */
+.main-content {
+  grid-column: 2;
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+  min-width: 0; /* 그리드 아이템 오버플로우 방지 */
+}
+
+/* 좌측 광고 공간 */
+.ad-space-left {
+  grid-column: 1;
+  min-height: 600px;
+  background-color: #f8fafc;
+  border: 2px dashed #cbd5e1;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* 우측 광고 공간 */
+.ad-space-right {
+  grid-column: 3;
+  min-height: 600px;
+  background-color: #f8fafc;
+  border: 2px dashed #cbd5e1;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* 그리드 레이아웃 */
+.grid.grid-cols-1.lg\:grid-cols-2 {
+  gap: 48px; /* 40px에서 48px로 복원하여 여유 공간 확보 */
+  width: 100%;
+  max-width: 100%;
+}
+
+/* 왼쪽 편집 영역 */
+.grid > div:first-child {
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+  overflow: visible;
+}
+
+/* 오른쪽 미리보기 영역 */
+.grid > div:last-child {
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+  overflow: visible;
+}
+
+/* 미리보기 컨테이너 */
+.preview-container {
+  max-width: 100%;
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* A4 미리보기 */
+.preview-a4 {
+  width: 100%;
+  max-width: 320mm; /* 300mm에서 320mm로 확장 */
+  min-width: 340px; /* 320px에서 340px로 확장 */
+  height: auto;
+  margin: 0 auto;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1800px) {
+  .main-layout {
+    grid-template-columns: 180px 1fr 180px; /* 200px에서 180px로 축소 */
+    gap: 28px; /* 32px에서 28px로 축소 */
+    padding: 0 44px;
+  }
+  
+  .container {
+    padding: 0 44px;
+  }
+  
+  .grid.grid-cols-1.lg\:grid-cols-2 {
+    gap: 44px; /* 48px에서 44px로 축소 */
+  }
+  
+  .preview-a4 {
+    max-width: 300mm; /* 320mm에서 300mm로 축소 */
+    min-width: 320px; /* 340px에서 320px로 축소 */
+  }
+}
+
+@media (max-width: 1400px) {
+  .main-layout {
+    grid-template-columns: 160px 1fr 160px;
+    gap: 24px;
+    padding: 0 40px;
+  }
+  
+  .container {
+    padding: 0 40px;
+  }
+  
+  .grid.grid-cols-1.lg\:grid-cols-2 {
+    gap: 40px;
+  }
+  
+  .preview-a4 {
+    max-width: 280mm;
+    min-width: 300px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .main-layout {
+    grid-template-columns: 140px 1fr 140px;
+    gap: 20px;
+    padding: 0 32px;
+  }
+  
+  .container {
+    padding: 0 32px;
+  }
+  
+  .grid.grid-cols-1.lg\:grid-cols-2 {
+    gap: 32px;
+  }
+  
+  .preview-a4 {
+    max-width: 260mm;
+    min-width: 280px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0 16px;
+  }
+  
+  .container {
+    padding: 0 16px;
+  }
+  
+  .ad-space-left,
+  .ad-space-right {
+    display: none;
+  }
+  
+  .main-content {
+    grid-column: 1;
+  }
+  
+  .grid.grid-cols-1.lg\:grid-cols-2 {
+    gap: 24px;
+  }
+  
+  .preview-a4 {
+    min-width: 260px;
+  }
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}

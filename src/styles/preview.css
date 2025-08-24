@@ -1,0 +1,609 @@
+/* 미리보기 컨테이너 */
+.preview-container {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* A4 크기 컨테이너 - 너비 확장 */
+.preview-a4 {
+  width: 100%;
+  max-width: none;
+  min-width: 350px;
+  height: auto;
+  margin: 0;
+  padding: 25mm;
+  box-sizing: border-box;
+  font-family: 'Times New Roman', serif;
+  line-height: 1.4;
+  color: #334155;
+  overflow-x: auto;
+}
+
+/* 헤더 섹션 */
+.preview-header {
+  text-align: center;
+  border-bottom: 2px solid #cbd5e1;
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+}
+
+.preview-name {
+  font-size: 28px;
+  font-weight: bold;
+  color: #1e293b;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.preview-contact {
+  margin-bottom: 16px;
+}
+
+.preview-contact p {
+  margin: 4px 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.preview-links {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.preview-links a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.preview-links a:hover {
+  text-decoration: underline;
+}
+
+/* 섹션 공통 스타일 */
+.preview-section {
+  margin-bottom: 24px;
+}
+
+.preview-section-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1e293b;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e2e8f0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.preview-section-content {
+  color: #475569;
+  line-height: 1.6;
+}
+
+/* 경력사항 섹션 */
+.preview-experience-list {
+  space-y: 16px;
+}
+
+.preview-experience-item {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.preview-experience-item:last-child {
+  border-bottom: none;
+}
+
+.preview-experience-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.preview-experience-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #1e293b;
+  margin: 0;
+}
+
+.preview-experience-date {
+  font-size: 14px;
+  color: #64748b;
+  font-style: italic;
+}
+
+.preview-experience-company {
+  font-size: 15px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.preview-experience-description {
+  color: #64748b;
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.preview-experience-tech {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.preview-experience-impact {
+  font-size: 13px;
+  color: #059669;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.preview-experience-achievements {
+  margin: 8px 0 0 0;
+  padding-left: 20px;
+}
+
+.preview-experience-achievements li {
+  color: #64748b;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+/* 교육사항 섹션 */
+.preview-education-list {
+  space-y: 16px;
+}
+
+.preview-education-item {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.preview-education-item:last-child {
+  border-bottom: none;
+}
+
+.preview-education-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.preview-education-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #1e293b;
+  margin: 0;
+}
+
+.preview-education-date {
+  font-size: 14px;
+  color: #64748b;
+  font-style: italic;
+}
+
+.preview-education-school {
+  font-size: 15px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.preview-education-field {
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.preview-education-thesis {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 8px;
+  font-style: italic;
+}
+
+.preview-education-advisor {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
+.preview-education-courses {
+  font-size: 13px;
+  color: #64748b;
+  font-style: italic;
+}
+
+/* 스킬 섹션 */
+.preview-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.preview-skills span {
+  background-color: #f1f5f9;
+  color: #475569;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* 핵심 역량 섹션 (Functional/Combination용) */
+.preview-skill-categories {
+  space-y: 20px;
+}
+
+.preview-skill-category {
+  margin-bottom: 20px;
+  padding: 16px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border-left: 4px solid #3b82f6;
+}
+
+.preview-skill-category-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #1e293b;
+  margin-bottom: 12px;
+}
+
+.preview-skill-category-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.preview-skill-item {
+  background-color: #dbeafe;
+  color: #1e40af;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.preview-skill-category-examples {
+  space-y: 6px;
+}
+
+.preview-skill-example {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+  padding-left: 16px;
+}
+
+/* 프로젝트 섹션 */
+.preview-project-list {
+  space-y: 16px;
+}
+
+.preview-project-item {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.preview-project-item:last-child {
+  border-bottom: none;
+}
+
+.preview-project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.preview-project-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #1e293b;
+  margin: 0;
+}
+
+.preview-project-date {
+  font-size: 14px;
+  color: #64748b;
+  font-style: italic;
+}
+
+.preview-project-description {
+  color: #64748b;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.preview-project-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.preview-project-tech span {
+  background-color: #fef3c7;
+  color: #92400e;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.preview-project-impact {
+  font-size: 13px;
+  color: #059669;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.preview-project-team {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 12px;
+}
+
+.preview-project-links {
+  display: flex;
+  gap: 12px;
+}
+
+.preview-project-links a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.preview-project-links a:hover {
+  text-decoration: underline;
+}
+
+/* 연구 분야 섹션 (Academic용) */
+.preview-research-interests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.preview-research-interest {
+  background-color: #f0f9ff;
+  color: #0369a1;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* 논문 섹션 (Academic용) */
+.preview-publications-list {
+  space-y: 16px;
+}
+
+.preview-publication-item {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.preview-publication-item:last-child {
+  border-bottom: none;
+}
+
+.preview-publication-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+.preview-publication-authors {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 4px;
+  font-style: italic;
+}
+
+.preview-publication-journal {
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* 학회 발표 섹션 (Academic용) */
+.preview-conferences-list {
+  space-y: 16px;
+}
+
+.preview-conference-item {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.preview-conference-item:last-child {
+  border-bottom: none;
+}
+
+.preview-conference-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+.preview-conference-details {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.preview-conference-type {
+  color: #7c3aed;
+  font-weight: 500;
+}
+
+/* 연구비 섹션 (Academic용) */
+.preview-grants-list {
+  space-y: 16px;
+}
+
+.preview-grant-item {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.preview-grant-item:last-child {
+  border-bottom: none;
+}
+
+.preview-grant-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+.preview-grant-details {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.preview-grant-amount {
+  font-size: 13px;
+  color: #059669;
+  font-weight: 500;
+}
+
+/* 강의 섹션 (Academic용) */
+.preview-teaching-list {
+  space-y: 16px;
+}
+
+.preview-teaching-item {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.preview-teaching-item:last-child {
+  border-bottom: none;
+}
+
+.preview-teaching-course {
+  font-size: 15px;
+  font-weight: bold;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+.preview-teaching-details {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.preview-teaching-students {
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* 수상 섹션 (Academic용) */
+.preview-awards-list {
+  space-y: 16px;
+}
+
+.preview-award-item {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.preview-award-item:last-child {
+  border-bottom: none;
+}
+
+.preview-award-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+.preview-award-organization {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.preview-award-description {
+  font-size: 13px;
+  color: #64748b;
+  font-style: italic;
+}
+
+/* 언어 섹션 */
+.preview-languages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.preview-languages span {
+  background-color: #fef3c7;
+  color: #92400e;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1200px) {
+  .preview-a4 {
+    max-width: 250mm !important;
+    padding: 20mm;
+  }
+}
+
+@media (max-width: 768px) {
+  .preview-a4 {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 250px;
+    padding: 16px;
+  }
+  
+  .preview-name {
+    font-size: 24px;
+  }
+  
+  .preview-experience-header,
+  .preview-education-header,
+  .preview-project-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .preview-links {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
