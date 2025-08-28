@@ -37,15 +37,7 @@
   flex: 1;
 }
 
-.template-badge {
-  display: inline-block;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
-  font-size: 0.875rem;
-}
+/* template-badge 스타일은 global.css로 이동됨 */
 
 .template-description {
   color: #64748b;
@@ -525,6 +517,50 @@
   color: rgba(255, 255, 255, 0.9);
   font-weight: 500;
   text-align: center;
+}
+
+/* 폰트 선택기 스타일 */
+.font-selector-section {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.font-selector-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.75rem;
+}
+
+.font-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.font-select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: white;
+  font-size: 0.875rem;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 150px;
+}
+
+.font-select:hover {
+  border-color: #9ca3af;
+}
+
+.font-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 /* 템플릿 옵션 스타일 */

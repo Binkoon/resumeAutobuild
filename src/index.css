@@ -1,5 +1,5 @@
 /* ===== CSS 파일 import 순서 ===== */
-/* 1. 글로벌 리셋 및 기본 스타일 */
+/* 1. 글로벌 리셋 및 기본 스타일 (최우선) */
 @import './styles/global.css';
 
 /* 2. 레이아웃 및 컴포넌트 스타일 */
@@ -15,7 +15,7 @@
 @import './styles/breadcrumb.css';
 @import './styles/draft-manager.css';
 
-/* 3. 모달팝업 스타일 (최상위 우선순위) */
+/* 3. 모달팝업 스타일 */
 @import './styles/modal.css';
 
 /* 4. 앱 전체 스타일 (최종 우선순위) */

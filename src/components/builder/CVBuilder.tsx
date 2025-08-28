@@ -9,7 +9,7 @@ import { Footer } from '../ui/Footer';
 import { useCVStore } from '../../stores/cvStore';
 import { useUIStore } from '../../stores/uiStore';
 import { downloadCV } from '../../lib/download';
-import { CV_TEMPLATES } from '../../types/cv';
+import { CV_TEMPLATES, type CVType } from '../../types/cv';
 import { LocationDetector } from '../ui/LocationDetector';
 
 export function CVBuilder() {
@@ -22,13 +22,13 @@ export function CVBuilder() {
   const [languagesInput, setLanguagesInput] = useState('');
   const [downloadFormat, setDownloadFormat] = useState<'pdf' | 'markdown' | 'html'>('pdf');
   const [activeSection, setActiveSection] = useState<'personal' | 'skills' | 'languages' | 'experience' | 'education' | 'projects'>('personal');
+  const [selectedFont, setSelectedFont] = useState<string>('Arial');
 
   // 앱 시작 시 저장된 임시저장 데이터 불러오기
   useEffect(() => {
     const savedDraft = localStorage.getItem('cvDraft');
     if (savedDraft) {
       try {
-        const draftData = JSON.parse(savedDraft);
         // 저장된 데이터가 있으면 사용자에게 복원 여부 확인
         if (confirm('이전에 임시저장된 CV 데이터가 있습니다. 복원하시겠습니까?')) {
           // cvData를 draftData로 복원하는 함수가 필요합니다
@@ -41,6 +41,11 @@ export function CVBuilder() {
       }
     }
   }, []);
+
+  // 폰트 변경 시 CSS 변수 업데이트
+  useEffect(() => {
+    document.documentElement.style.setProperty('--cv-font-family', selectedFont);
+  }, [selectedFont]);
 
   const handleKeyPress = (e: React.KeyboardEvent, action: () => void) => {
     if (e.key === 'Enter') {
@@ -86,8 +91,8 @@ export function CVBuilder() {
   const isDownloadReady = (): boolean => {
     const { personalInfo, skills, languages, experience, education, projects } = cvData;
     
-    // 기본 정보 필수 항목 확인
-    const hasBasicInfo = personalInfo.name && personalInfo.email && personalInfo.phone && personalInfo.location;
+         // 기본 정보 필수 항목 확인
+     const hasBasicInfo = personalInfo.name && personalInfo.email && personalInfo.phone && personalInfo.location && personalInfo.jobTitle;
     
     // 스킬과 언어는 최소 1개 이상
     const hasSkills = skills.length > 0;
@@ -108,7 +113,7 @@ export function CVBuilder() {
     
     const { personalInfo, skills, languages, experience, education, projects } = cvData;
     
-    if (personalInfo.name && personalInfo.email && personalInfo.phone && personalInfo.location) completedSteps++;
+         if (personalInfo.name && personalInfo.email && personalInfo.phone && personalInfo.location && personalInfo.jobTitle) completedSteps++;
     if (skills.length > 0) completedSteps++;
     if (languages.length > 0) completedSteps++;
     if (experience.length > 0) completedSteps++;
@@ -122,8 +127,8 @@ export function CVBuilder() {
   const getStepStatus = () => {
     const { personalInfo, skills, languages, experience, education, projects } = cvData;
     
-    return {
-      basicInfo: !!(personalInfo.name && personalInfo.email && personalInfo.phone && personalInfo.location),
+         return {
+       personal: !!(personalInfo.name && personalInfo.email && personalInfo.phone && personalInfo.location && personalInfo.jobTitle),
       skills: skills.length > 0,
       languages: languages.length > 0,
       experience: experience.length > 0,
@@ -154,16 +159,26 @@ export function CVBuilder() {
                 </svg>
                 개인정보
               </h2>
-              <div className="input-grid input-grid-2">
-                <div className="input-field">
-                  <input
-                    type="text"
-                    placeholder="이름"
-                    value={cvData.personalInfo.name}
-                    onChange={(e) => updatePersonalInfo('name', e.target.value)}
-                    className="form-input"
-                  />
-                </div>
+                             <div className="input-grid input-grid-2">
+                 <div className="input-field">
+                   <input
+                     type="text"
+                     placeholder="이름"
+                     value={cvData.personalInfo.name}
+                     onChange={(e) => updatePersonalInfo('name', e.target.value)}
+                     className="form-input"
+                   />
+                 </div>
+                 
+                 <div className="input-field">
+                   <input
+                     type="text"
+                     placeholder="직무명 (예: 프론트엔드 개발자)"
+                     value={cvData.personalInfo.jobTitle}
+                     onChange={(e) => updatePersonalInfo('jobTitle', e.target.value)}
+                     className="form-input"
+                   />
+                 </div>
                 
                 <div className="input-field">
                   <input
@@ -396,7 +411,7 @@ export function CVBuilder() {
           progressPercentage={getProgressPercentage()}
           sections={sections}
           activeSection={activeSection}
-          onSectionChange={(sectionId) => setActiveSection(sectionId as any)}
+          onSectionChange={(sectionId: string) => setActiveSection(sectionId as 'personal' | 'skills' | 'languages' | 'experience' | 'education' | 'projects')}
           stepStatus={getStepStatus()}
           onDownload={handleDownload}
           onReset={() => {
@@ -436,21 +451,13 @@ export function CVBuilder() {
                 <div className="template-info">
                   <h3 className="template-title">현재 템플릿</h3>
                   <div className="current-template-info">
-                    <div className="template-badge">
-                      <span className="template-type">
-                        {cvData.type === 'chronological' && '역순 연대기형'}
-                        {cvData.type === 'functional' && '기능형'}
-                        {cvData.type === 'combination' && '혼합형'}
-                        {cvData.type === 'academic' && '학문형'}
-                        {cvData.type === 'creative' && '크리에이티브'}
-                      </span>
-                    </div>
+                    <span className="template-badge template-badge-large">
+                      {cvData.type === 'chronological' && '역순 연대기형'}
+                      {cvData.type === 'cascade' && 'Cascade Type'}
+                    </span>
                     <p className="template-description">
                       {cvData.type === 'chronological' && '경력 중심의 역순 연대기형 이력서'}
-                      {cvData.type === 'functional' && '스킬과 역량 중심의 기능형 이력서'}
-                      {cvData.type === 'combination' && '스킬과 경력을 조합한 혼합형 이력서'}
-                      {cvData.type === 'academic' && '학술 연구 중심의 학문형 이력서'}
-                      {cvData.type === 'creative' && '창의적 디자인 중심의 크리에이티브 이력서'}
+                      {cvData.type === 'cascade' && '사이드바와 메인 콘텐츠가 균형잡힌 현대적인 레이아웃'}
                     </p>
                   </div>
                 </div>
@@ -458,11 +465,30 @@ export function CVBuilder() {
                 {/* 템플릿 선택 옵션들 */}
                 <div className="template-options">
                   <h4 className="template-options-title">템플릿 변경</h4>
+                  
+                  {/* 폰트 선택기 */}
+                  <div className="font-selector-section">
+                    <h4 className="font-selector-title">폰트 선택</h4>
+                    <div className="font-selector">
+                      <select 
+                        value={selectedFont} 
+                        onChange={(e) => setSelectedFont(e.target.value)}
+                        className="font-select"
+                      >
+                        <option value="Arial">Arial</option>
+                        <option value="Calibri">Calibri</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Verdana">Verdana</option>
+                        <option value="Garamond">Garamond</option>
+                      </select>
+                    </div>
+                  </div>
+                  
                   <div className="template-grid">
                     {Object.entries(CV_TEMPLATES).map(([type, template]) => (
                       <button
                         key={type}
-                        onClick={() => setCVType(type as any)}
+                        onClick={() => setCVType(type as CVType)}
                         className={`template-option ${cvData.type === type ? 'template-option-active' : ''}`}
                       >
                         <div className="template-option-header">
@@ -501,7 +527,7 @@ export function CVBuilder() {
                   {sections.map((section) => (
                     <button
                       key={section.id}
-                      onClick={() => setActiveSection(section.id as any)}
+                      onClick={() => setActiveSection(section.id as 'personal' | 'skills' | 'languages' | 'experience' | 'education' | 'projects')}
                       className={`section-nav-item ${activeSection === section.id ? 'active' : ''}`}
                     >
                       <span className="section-icon">{section.icon}</span>

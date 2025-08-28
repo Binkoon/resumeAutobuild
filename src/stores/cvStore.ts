@@ -14,7 +14,7 @@ import type {
   Teaching,
   Award
 } from '../types/cv';
-import { CV_TEMPLATES } from '../types/cv';
+
 
 interface CVStore {
   // 상태
@@ -93,7 +93,7 @@ interface CVStore {
 }
 
 // 초기 CV 데이터
-const createInitialCVData = (type: CVType = 'chronological'): CVData => ({
+const createInitialCVData = (type: CVType = 'cascade'): CVData => ({
   type,
   personalInfo: {
     name: '',
@@ -102,8 +102,11 @@ const createInitialCVData = (type: CVType = 'chronological'): CVData => ({
     location: '',
     linkedin: '',
     github: '',
-    summary: ''
+    summary: '',
+    jobTitle: '',
+    isRequired: true
   },
+  academicBackground: [],
   experience: [],
   education: [],
   projects: [],

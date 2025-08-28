@@ -816,19 +816,9 @@
   text-align: center;
 }
 
-.template-badge {
-  margin-bottom: 12px;
-}
+/* template-badge 스타일은 global.css로 이동됨 */
 
-.template-type {
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 600;
-  display: inline-block;
-}
+/* template-type 스타일은 global.css의 template-badge-large로 통합됨 */
 
 .template-description {
   color: #64748b;

@@ -12,6 +12,197 @@ export function Preview({ className = '' }: PreviewProps) {
   const { cvData } = useCVStore();
   const template = CV_TEMPLATES[cvData.type];
 
+  // Cascade 템플릿 렌더링
+  const renderCascadeTemplate = () => (
+    <div className="cv-container">
+      {/* 사이드바 - 개인정보 */}
+      <div className="cv-sidebar">
+        <div className="personal-info">
+          <div className="name">{cvData.personalInfo.name || '이름을 입력하세요'}</div>
+          <div className="contact-info">
+            <div className="contact-item">
+              <span className="contact-icon">📧</span>
+              {cvData.personalInfo.email || '이메일을 입력하세요'}
+            </div>
+            <div className="contact-item">
+              <span className="contact-icon">📱</span>
+              {cvData.personalInfo.phone || '전화번호를 입력하세요'}
+            </div>
+            <div className="contact-item">
+              <span className="contact-icon">📍</span>
+              {cvData.personalInfo.location || '위치를 입력하세요'}
+            </div>
+            {cvData.personalInfo.github && (
+              <div className="contact-item">
+                <span className="contact-icon">💻</span>
+                <a href={cvData.personalInfo.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+              </div>
+            )}
+            {cvData.personalInfo.linkedin && (
+              <div className="contact-item">
+                <span className="contact-icon">🔗</span>
+                <a href={cvData.personalInfo.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+             {/* 헤더 - 직무, 소개글 */}
+       <div className="cv-header">
+         <div className="job-title">{cvData.personalInfo.jobTitle || '직무명을 입력하세요'}</div>
+         <div className="summary">{cvData.personalInfo.summary || '자기소개를 입력하세요'}</div>
+       </div>
+
+      {/* 학력사항 */}
+      <div className="cv-education">
+        <div className="section-title">학력사항</div>
+        {cvData.education.length > 0 ? (
+          cvData.education.map((edu, index) => (
+            <div key={edu.id} className="education-item">
+              <div className="school-name">{edu.school || '학교명'}</div>
+              <div className="degree-field">{edu.degree} {edu.field}</div>
+            </div>
+          ))
+        ) : (
+          <div className="education-item">
+            <div className="school-name">학교명을 입력하세요</div>
+            <div className="degree-field">학위 및 전공을 입력하세요</div>
+          </div>
+        )}
+      </div>
+
+      {/* 학력기간 */}
+      <div className="cv-education-period">
+        <div className="period">
+          {cvData.education.length > 0 ? 
+            cvData.education.map((edu, index) => (
+              <div key={edu.id} className="education-period-item">
+                {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
+              </div>
+            )) : 
+            <div className="education-period-item">기간을 입력하세요</div>
+          }
+        </div>
+      </div>
+
+      {/* 경력사항 */}
+      <div className="cv-experience">
+        <div className="section-title">경력사항</div>
+        {cvData.experience.length > 0 ? (
+          cvData.experience.map((exp, index) => (
+            <div key={exp.id} className="experience-item">
+              <div className="company-position">{exp.company} - {exp.position}</div>
+              <div className="description">{exp.description || '업무 설명을 입력하세요'}</div>
+            </div>
+          ))
+        ) : (
+          <div className="experience-item">
+            <div className="company-position">회사명 - 직책</div>
+            <div className="description">업무 설명을 입력하세요</div>
+          </div>
+        )}
+      </div>
+
+      {/* 경력기간 */}
+      <div className="cv-experience-period">
+        <div className="period">
+          {cvData.experience.length > 0 ? 
+            cvData.experience.map((exp, index) => (
+              <div key={exp.id} className="experience-period-item">
+                {formatDate(exp.startDate)} - {formatDate(exp.endDate)}
+              </div>
+            )) : 
+            <div className="experience-period-item">기간을 입력하세요</div>
+          }
+        </div>
+      </div>
+
+      {/* 프로젝트 */}
+      <div className="cv-projects">
+        <div className="section-title">프로젝트</div>
+        {cvData.projects.length > 0 ? (
+          cvData.projects.map((project, index) => (
+            <div key={project.id} className="project-item">
+              <div className="project-name">{project.name || '프로젝트명'}</div>
+              <div className="project-description">{project.description || '프로젝트 설명을 입력하세요'}</div>
+            </div>
+          ))
+        ) : (
+          <div className="project-item">
+            <div className="project-name">프로젝트명</div>
+            <div className="project-description">프로젝트 설명을 입력하세요</div>
+          </div>
+        )}
+      </div>
+
+      {/* 프로젝트기간 */}
+      <div className="cv-project-period">
+        <div className="period">
+          {cvData.projects.length > 0 ? 
+            cvData.projects.map((project, index) => (
+              <div key={project.id} className="project-period-item">
+                {formatDate(project.startDate)} - {formatDate(project.endDate)}
+              </div>
+            )) : 
+            <div className="project-period-item">기간을 입력하세요</div>
+          }
+        </div>
+      </div>
+
+      {/* 자격사항 */}
+      <div className="cv-certifications">
+        <div className="section-title">자격사항</div>
+        <div className="certification-item">
+          <div className="cert-name">자격증명</div>
+          <div className="cert-org">발급기관</div>
+        </div>
+      </div>
+
+      {/* 자격 취득날짜 */}
+      <div className="cv-cert-date">
+        <div className="date">취득날짜</div>
+      </div>
+
+      {/* 어학사항 */}
+      <div className="cv-languages">
+        <div className="section-title">어학사항</div>
+        {cvData.languages.length > 0 ? (
+          cvData.languages.map((lang, index) => (
+            <div key={index} className="language-item">
+              <div className="lang-name">{lang}</div>
+              <div className="lang-score">점수</div>
+            </div>
+          ))
+        ) : (
+          <div className="language-item">
+            <div className="lang-name">언어명</div>
+            <div className="lang-score">점수</div>
+          </div>
+        )}
+      </div>
+
+      {/* 어학 점수 취득날짜 */}
+      <div className="cv-lang-date">
+        <div className="date">취득날짜</div>
+      </div>
+
+      {/* 기술스택 */}
+      <div className="cv-skills">
+        <div className="section-title">기술스택</div>
+        <div className="skills-list">
+          {cvData.skills.length > 0 ? (
+            cvData.skills.map((skill, index) => (
+              <span key={index} className="skill-tag">{skill}</span>
+            ))
+          ) : (
+            <span className="skill-tag">기술을 입력하세요</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
   // 섹션별 렌더링 함수들
   const renderContactSection = () => (
     <div className="preview-header">
@@ -409,6 +600,17 @@ export function Preview({ className = '' }: PreviewProps) {
       return renderer ? renderer() : null;
     });
   };
+
+  // Cascade 템플릿 렌더링
+  if (cvData.type === 'cascade') {
+    return (
+      <div className={`preview-container template-cascade ${className}`}>
+        <div className="cv-preview">
+          {renderCascadeTemplate()}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`preview-container ${className}`}>
