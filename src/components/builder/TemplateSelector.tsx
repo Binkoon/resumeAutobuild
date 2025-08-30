@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCVStore } from '../../stores/cvStore';
 import { CV_TEMPLATES } from '../../types/cv';

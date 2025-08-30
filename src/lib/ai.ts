@@ -10,9 +10,9 @@ export interface AISuggestion {
  * AI 제안을 받아오는 함수 (현재는 stub, 추후 OpenAI API 연동)
  */
 export async function suggest(
-  context: string,
+  _context: string,
   field: string,
-  cvData: Partial<CVData>
+  _cvData: Partial<CVData>
 ): Promise<AISuggestion[]> {
   // TODO: OpenAI API 연동
   // 현재는 더미 데이터 반환
@@ -39,7 +39,7 @@ export async function suggest(
  */
 export async function getAutocompleteSuggestions(
   partialText: string,
-  context: string
+  _context: string
 ): Promise<string[]> {
   // TODO: 실제 AI 모델 연동
   const suggestions = [

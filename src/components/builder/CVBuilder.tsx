@@ -1,19 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { SectionEditor } from './SectionEditor';
-import { Preview } from './Preview';
-import { GhostTextarea } from './GhostTextarea';
-import { SkillDropdown } from '../ui/SkillDropdown';
-import { StarRating } from '../ui/StarRating';
-import { Translator } from '../ui/Translator';
-import { Header } from '../ui/Header';
-import { Footer } from '../ui/Footer';
+import { SectionLoading } from '../ui/LoadingSpinner';
+
+// 레이지 로딩으로 컴포넌트 분할
+const SectionEditor = lazy(() => import('./SectionEditor').then(module => ({ default: module.SectionEditor })));
+const Preview = lazy(() => import('./Preview').then(module => ({ default: module.Preview })));
+const GhostTextarea = lazy(() => import('./GhostTextarea').then(module => ({ default: module.GhostTextarea })));
+const SkillDropdown = lazy(() => import('../ui/SkillDropdown').then(module => ({ default: module.SkillDropdown })));
+const StarRating = lazy(() => import('../ui/StarRating').then(module => ({ default: module.StarRating })));
+const Translator = lazy(() => import('../ui/Translator').then(module => ({ default: module.Translator })));
+const Header = lazy(() => import('../ui/Header').then(module => ({ default: module.Header })));
+const Footer = lazy(() => import('../ui/Footer').then(module => ({ default: module.Footer })));
 import { useCVStore } from '../../stores/cvStore';
 import { useUIStore } from '../../stores/uiStore';
 import { downloadCV } from '../../lib/download';
 import { CV_TEMPLATES, type CVType } from '../../types/cv';
 import { LocationDetector } from '../ui/LocationDetector';
-import { formatPhoneNumber, formatPhoneForCountry, getFieldValidationMessage, validateRequiredFields } from '../../lib/validation';
+import { formatPhoneNumber, getFieldValidationMessage, validateRequiredFields } from '../../lib/validation';
 
 // 헤더 색상 옵션
 const HEADER_COLOR_OPTIONS = [
@@ -32,7 +35,7 @@ const HEADER_COLOR_OPTIONS = [
 export function CVBuilder() {
   // Zustand 스토어에서 상태와 액션 가져오기
   const { cvData, updatePersonalInfo, addSkill, removeSkill, addLanguage, removeLanguage, resetAfterCompletion, setCVType, setHeaderColor, setSkillScore } = useCVStore();
-  const { isLoading, error } = useUIStore();
+  const { isLoading, error, setLoading, setError } = useUIStore();
   
   // 로컬 상태
   const [skillsInput, setSkillsInput] = useState('');
@@ -94,6 +97,7 @@ export function CVBuilder() {
   // CV 다운로드 처리
   const handleDownload = async () => {
     try {
+      setLoading(true);
       await downloadCV(cvData, downloadFormat, () => {
         // 다운로드 완료 후 초기화
         resetAfterCompletion();
@@ -104,7 +108,9 @@ export function CVBuilder() {
       });
     } catch (error) {
       console.error('다운로드 실패:', error);
-      alert('다운로드에 실패했습니다. 다시 시도해주세요.');
+      setError('다운로드에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -455,11 +461,13 @@ export function CVBuilder() {
                       </button>
                     </div>
                     <div className="skill-rating-section">
-                      <StarRating
-                        score={cvData.skillScores[skill] || 3}
-                        onScoreChange={(score) => setSkillScore(skill, score)}
-                        size="sm"
-                      />
+                      <Suspense fallback={<div>별점 로딩 중...</div>}>
+                        <StarRating
+                          score={cvData.skillScores[skill] || 3}
+                          onScoreChange={(score) => setSkillScore(skill, score)}
+                          size="sm"
+                        />
+                      </Suspense>
                     </div>
                   </div>
                 ))}
@@ -614,7 +622,9 @@ export function CVBuilder() {
                 </svg>
                 경력사항
               </h2>
-              <SectionEditor type="experience" />
+              <Suspense fallback={<SectionLoading message="경력 섹션을 불러오는 중..." />}>
+                <SectionEditor type="experience" />
+              </Suspense>
               
               {/* 네비게이션 버튼 */}
               <div className="section-navigation">
@@ -660,7 +670,9 @@ export function CVBuilder() {
                 </svg>
                 교육사항
               </h2>
-              <SectionEditor type="education" />
+              <Suspense fallback={<SectionLoading message="교육 섹션을 불러오는 중..." />}>
+                <SectionEditor type="education" />
+              </Suspense>
               
               {/* 네비게이션 버튼 */}
               <div className="section-navigation">
@@ -705,7 +717,9 @@ export function CVBuilder() {
                 </svg>
                 프로젝트
               </h2>
-              <SectionEditor type="project" />
+              <Suspense fallback={<SectionLoading message="프로젝트 섹션을 불러오는 중..." />}>
+                <SectionEditor type="project" />
+              </Suspense>
               
               {/* 네비게이션 버튼 */}
               <div className="section-navigation">
@@ -749,36 +763,63 @@ export function CVBuilder() {
     }
   };
 
+  // 로딩 상태 표시
+  if (isLoading) {
+    return (
+      <div className="minimal">
+        <SectionLoading message="CV를 처리하는 중..." />
+      </div>
+    );
+  }
+
   return (
     <div className="minimal">
+      {/* 에러 상태 표시 */}
+      {error && (
+        <div className="error-banner">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {error}
+          <button 
+            onClick={() => setError(null)}
+            style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'inherit', cursor: 'pointer' }}
+          >
+            ×
+          </button>
+        </div>
+      )}
+      
       {/* 메인 콘텐츠 */}
       <div className="main-content">
-        <Header 
-          progressPercentage={getProgressPercentage()}
-          sections={sections}
-          activeSection={activeSection}
-          onSectionChange={(sectionId: string) => setActiveSection(sectionId as 'personal' | 'skills' | 'languages' | 'experience' | 'education' | 'projects')}
-          stepStatus={getStepStatus()}
-          onDownload={handleDownload}
-          onReset={() => {
-            if (confirm('정말로 모든 CV 데이터를 초기화하시겠습니까?\n\n이 작업은 되돌릴 수 없으며, 작성 중인 모든 내용이 사라집니다.')) {
-              resetAfterCompletion();
-              // 번역기도 함께 초기화
-              setTranslatorReset(true);
-              setTimeout(() => setTranslatorReset(false), 100); // 짧은 시간 후 false로 리셋
-              alert('CV 데이터가 초기화되었습니다.\n\n새로운 CV 작성을 시작할 수 있습니다.');
-            }
-          }}
-          onSaveDraft={() => {
-            // 임시저장 기능 구현
-            localStorage.setItem('cvDraft', JSON.stringify(cvData));
-            alert('임시저장되었습니다!');
-          }}
-          isDownloadReady={isDownloadReady()}
-          isLoading={isLoading}
-          downloadFormat={downloadFormat}
-          onDownloadFormatChange={(format: string) => setDownloadFormat(format as 'pdf' | 'markdown' | 'html')}
-        />
+        <Suspense fallback={<SectionLoading message="헤더를 불러오는 중..." />}>
+          <Header 
+            progressPercentage={getProgressPercentage()}
+            sections={sections}
+            activeSection={activeSection}
+            onSectionChange={(sectionId: string) => setActiveSection(sectionId as 'personal' | 'skills' | 'languages' | 'experience' | 'education' | 'projects')}
+            stepStatus={getStepStatus()}
+            onDownload={handleDownload}
+            onReset={() => {
+              if (confirm('정말로 모든 CV 데이터를 초기화하시겠습니까?\n\n이 작업은 되돌릴 수 없으며, 작성 중인 모든 내용이 사라집니다.')) {
+                resetAfterCompletion();
+                // 번역기도 함께 초기화
+                setTranslatorReset(true);
+                setTimeout(() => setTranslatorReset(false), 100); // 짧은 시간 후 false로 리셋
+                alert('CV 데이터가 초기화되었습니다.\n\n새로운 CV 작성을 시작할 수 있습니다.');
+              }
+            }}
+            onSaveDraft={() => {
+              // 임시저장 기능 구현
+              localStorage.setItem('cvDraft', JSON.stringify(cvData));
+              alert('임시저장되었습니다!');
+            }}
+            isDownloadReady={isDownloadReady()}
+            isLoading={isLoading}
+            downloadFormat={downloadFormat}
+            onDownloadFormatChange={(format: string) => setDownloadFormat(format as 'pdf' | 'markdown' | 'html')}
+          />
+        </Suspense>
         
         {/* 에러 표시 */}
         {error && (
@@ -915,13 +956,17 @@ export function CVBuilder() {
               </p>
             </div>
             <AnimatePresence mode="wait">
-              <Preview key={cvData.type} />
+              <Suspense fallback={<SectionLoading message="미리보기를 불러오는 중..." />}>
+                <Preview key={cvData.type} />
+              </Suspense>
             </AnimatePresence>
           </div>
         </div>
         
         {/* Footer */}
-        <Footer />
+        <Suspense fallback={<SectionLoading message="푸터를 불러오는 중..." />}>
+          <Footer />
+        </Suspense>
       </div>
     </div>
   );

@@ -141,7 +141,7 @@ async function downloadAsPDF(cvData: CVData): Promise<void> {
       doc.text('교육사항', margin, yPosition);
       yPosition += 8;
       
-      cvData.education.forEach((edu, index) => {
+      cvData.education.forEach((edu) => {
         if (yPosition > doc.internal.pageSize.getHeight() - 30) {
           doc.addPage();
           yPosition = 20;

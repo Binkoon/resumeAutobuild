@@ -92,47 +92,150 @@ export function Header({
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
+            {/* 모던한 그라데이션 원형 진행률 */}
             <motion.div 
-              className="progress-circle"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.5, type: "spring", stiffness: 200 }}
+              className="progress-circle-modern"
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ duration: 0.8, delay: 0.5, type: "spring", stiffness: 200 }}
             >
-              <svg className="progress-ring" viewBox="0 0 60 60">
-                <circle
-                  className="progress-ring-bg"
-                  cx="30"
-                  cy="30"
-                  r="25"
-                  strokeWidth="4"
-                />
-                <motion.circle
-                  className="progress-ring-fill"
-                  cx="30"
-                  cy="30"
-                  r="25"
-                  strokeWidth="4"
-                  initial={{ strokeDasharray: "0 157" }}
-                  animate={{ strokeDasharray: `${(progressPercentage / 100) * 157} 157` }}
-                  transition={{ duration: 1, delay: 0.8, ease: "easeInOut" }}
-                  strokeDashoffset="0"
-                />
-              </svg>
-              <motion.div 
-                className="progress-text"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: 1.2 }}
-              >
-                <span className="progress-number">{progressPercentage}%</span>
-                <span className="progress-label">완료</span>
-              </motion.div>
+              <div className="progress-circle-container">
+                <svg className="progress-ring-modern" viewBox="0 0 80 80">
+                  {/* 배경 원 */}
+                  <circle
+                    className="progress-ring-bg-modern"
+                    cx="40"
+                    cy="40"
+                    r="32"
+                    strokeWidth="6"
+                    fill="none"
+                  />
+                  {/* 진행률 원 - 그라데이션 */}
+                  <defs>
+                    <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#667eea" />
+                      <stop offset="50%" stopColor="#764ba2" />
+                      <stop offset="100%" stopColor="#f093fb" />
+                    </linearGradient>
+                    <filter id="glow">
+                      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                      <feMerge> 
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
+                  </defs>
+                  <motion.circle
+                    className="progress-ring-fill-modern"
+                    cx="40"
+                    cy="40"
+                    r="32"
+                    strokeWidth="6"
+                    fill="none"
+                    stroke="url(#progressGradient)"
+                    filter="url(#glow)"
+                    strokeLinecap="round"
+                    initial={{ strokeDasharray: "0 201" }}
+                    animate={{ strokeDasharray: `${(progressPercentage / 100) * 201} 201` }}
+                    transition={{ duration: 1.5, delay: 0.8, ease: "easeInOut" }}
+                    strokeDashoffset="50"
+                  />
+                  {/* 중앙 아이콘 */}
+                  <motion.circle
+                    className="progress-center"
+                    cx="40"
+                    cy="40"
+                    r="18"
+                    fill="rgba(255, 255, 255, 0.1)"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 0.5, delay: 1.2 }}
+                  />
+                </svg>
+                
+                {/* 중앙 텍스트 */}
+                <motion.div 
+                  className="progress-text-modern"
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 1.4 }}
+                >
+                  <motion.span 
+                    className="progress-number-modern"
+                    key={progressPercentage}
+                    initial={{ scale: 1.2, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {progressPercentage}%
+                  </motion.span>
+                  <motion.span 
+                    className="progress-label-modern"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 1.6 }}
+                  >
+                  </motion.span>
+                </motion.div>
+                
+                {/* 진행률에 따른 아이콘 */}
+                <motion.div 
+                  className="progress-icon"
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 1.8 }}
+                >
+                  {progressPercentage === 100 ? (
+                    <motion.span
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ duration: 0.6, delay: 2.0, type: "spring", stiffness: 200 }}
+                      className="completion-icon"
+                    >
+                      🎉
+                    </motion.span>
+                  ) : progressPercentage > 50 ? (
+                    <motion.span
+                      animate={{ rotate: [0, 10, -10, 0] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      className="progress-icon-emoji"
+                    >
+                      ⚡
+                    </motion.span>
+                  ) : (
+                    <motion.span
+                      animate={{ y: [0, -5, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                      className="progress-icon-emoji"
+                    >
+                      
+                    </motion.span>
+                  )}
+                </motion.div>
+              </div>
             </motion.div>
-            <div className="progress-info">
-              <span className="progress-status">
-                {progressPercentage === 100 ? '🎉 CV 작성 완료!' : 'CV 작성 중...'}
-              </span>
-            </div>
+            
+            {/* 상태 정보 */}
+            <motion.div 
+              className="progress-info-modern"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 1.0 }}
+            >
+              <motion.span 
+                className="progress-status-modern"
+                key={progressPercentage}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                {progressPercentage === 100 ? '🎉 CV 작성 완료!' : 
+                 progressPercentage > 75 ? '거의 다 왔어요! 💪' :
+                 progressPercentage > 50 ? '잘하고 있어요! ✨' :
+                 progressPercentage > 25 ? '시작이 좋아요! 🌟' :
+                 'CV 작성을 시작해보세요! 🚀'}
+              </motion.span>
+            </motion.div>
           </motion.div>
           
           {/* 헤더 액션 버튼들 */}

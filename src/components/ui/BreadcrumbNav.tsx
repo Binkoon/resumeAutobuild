@@ -14,7 +14,7 @@ interface BreadcrumbNavProps {
   currentStep: string;
 }
 
-export function BreadcrumbNav({ steps, onStepClick, currentStep }: BreadcrumbNavProps) {
+export function BreadcrumbNav({ steps, onStepClick }: BreadcrumbNavProps) {
   const getStepStatus = (step: BreadcrumbStep) => {
     if (step.isCurrent) return 'current';
     if (step.isCompleted) return 'completed';

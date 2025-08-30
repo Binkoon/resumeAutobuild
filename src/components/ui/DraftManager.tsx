@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   getDrafts, 
   saveDraft, 
   loadDraft, 
   deleteDraft, 
   clearAllDrafts, 
-  getStorageUsage,
-  AutosaveEntry 
+  getStorageUsage
 } from '../../lib/autosave';
-import { CVData } from '../../types/cv';
+import type { CVData } from '../../types/cv';
 
 interface DraftManagerProps {
   currentData: CVData;
@@ -17,13 +16,13 @@ interface DraftManagerProps {
 }
 
 export function DraftManager({ currentData, onLoadDraft, onSaveDraft }: DraftManagerProps) {
-  const [drafts, setDrafts] = useState<AutosaveEntry[]>([]);
+  const [drafts, setDrafts] = useState<any[]>([]);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showLoadModal, setShowLoadModal] = useState(false);
   const [draftName, setDraftName] = useState('');
   const [draftDescription, setDraftDescription] = useState('');
   const [storageUsage, setStorageUsage] = useState({ used: 0, total: 0 });
-  const [selectedDraft, setSelectedDraft] = useState<AutosaveEntry | null>(null);
+  const [selectedDraft, setSelectedDraft] = useState<any | null>(null);
 
   useEffect(() => {
     loadDrafts();
@@ -65,7 +64,7 @@ export function DraftManager({ currentData, onLoadDraft, onSaveDraft }: DraftMan
     }
   };
 
-  const handleLoadDraft = (draft: AutosaveEntry) => {
+  const handleLoadDraft = (draft: any) => {
     const data = loadDraft(draft.id);
     if (data) {
       onLoadDraft(data);

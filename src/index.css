@@ -14,6 +14,8 @@
 @import './styles/datepicker.css';
 @import './styles/breadcrumb.css';
 @import './styles/draft-manager.css';
+@import './styles/loading.css';
+@import './styles/star-rating.css';
 
 /* 3. 모달팝업 스타일 */
 @import './styles/modal.css';

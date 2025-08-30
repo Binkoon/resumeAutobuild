@@ -7,10 +7,12 @@ export const createEmptyExperience = (): ExperienceItem => ({
   position: '',
   startDate: '',
   endDate: '',
+  isCurrent: false,
   description: '',
   achievements: [],
   technologies: [],
-  impact: ''
+  impact: '',
+  isRequired: false
 });
 
 export const createEmptyEducation = (): EduItem => ({
@@ -20,10 +22,12 @@ export const createEmptyEducation = (): EduItem => ({
   field: '',
   startDate: '',
   endDate: '',
+  isCurrent: false,
   gpa: '',
   relevantCourses: [],
   thesis: '',
-  advisor: ''
+  advisor: '',
+  isRequired: false
 });
 
 export const createEmptyProject = (): ProjectItem => ({
@@ -35,8 +39,10 @@ export const createEmptyProject = (): ProjectItem => ({
   liveUrl: '',
   startDate: '',
   endDate: '',
+  isCurrent: false,
   impact: '',
-  teamSize: 1
+  teamSize: 1,
+  isRequired: false
 });
 
 // 스킬 카테고리 생성

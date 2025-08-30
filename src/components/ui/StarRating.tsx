@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface StarRatingProps {
   score: number; // 1-5
   onScoreChange?: (score: number) => void;

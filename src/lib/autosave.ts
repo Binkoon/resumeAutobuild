@@ -1,5 +1,5 @@
 // 자동 저장 및 임시저장 기능
-import { CVData } from '../types/cv';
+import type { CVData } from '../types/cv';
 
 const AUTOSAVE_KEY = 'cv_autosave';
 const AUTOSAVE_INTERVAL = 30000; // 30초마다 자동저장

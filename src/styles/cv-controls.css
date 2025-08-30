@@ -326,12 +326,119 @@
 
 /* 헤더 스타일 */
 .main-header {
-  background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 50%, #a855f7 100%);
+  background: linear-gradient(135deg, #10b981 0%, #06b6d4 50%, #3b82f6 100%);
   color: white;
   padding: 2rem 0;
   margin-bottom: 2rem;
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* 모던한 진행률 표시 스타일 */
+.progress-circle-modern {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-circle-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-ring-modern {
+  transform: rotate(-90deg);
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 8px rgba(102, 126, 234, 0.3));
+}
+
+.progress-ring-bg-modern {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.2);
+  stroke-width: 6;
+}
+
+.progress-ring-fill-modern {
+  fill: none;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px rgba(102, 126, 234, 0.5));
+  transition: stroke-dasharray 1.5s ease-in-out;
+}
+
+.progress-center {
+  fill: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.progress-text-modern {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+}
+
+.progress-number-modern {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: white;
+  line-height: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.progress-label-modern {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.progress-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.progress-icon-emoji {
+  font-size: 1.2rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.completion-icon {
+  font-size: 1.5rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.progress-info-modern {
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.progress-status-modern {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  line-height: 1.3;
 }
 
 .header-content {

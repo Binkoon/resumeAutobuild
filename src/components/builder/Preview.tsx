@@ -108,7 +108,7 @@ export function Preview({ className = '' }: PreviewProps) {
       <div className="cv-education">
         <div className="section-title">학력사항</div>
         {cvData.education.length > 0 ? (
-          cvData.education.map((edu, index) => (
+          cvData.education.map((edu) => (
             <div key={edu.id} className="education-item">
               <div className="school-name">{edu.school || '학교명'}</div>
               <div className="degree-field">{edu.degree} {edu.field}</div>
@@ -126,7 +126,7 @@ export function Preview({ className = '' }: PreviewProps) {
       <div className="cv-education-period">
         <div className="period">
           {cvData.education.length > 0 ? 
-            cvData.education.map((edu, index) => (
+            cvData.education.map((edu) => (
               <div key={edu.id} className="education-period-item">
                 {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
               </div>
@@ -140,7 +140,7 @@ export function Preview({ className = '' }: PreviewProps) {
       <div className="cv-experience">
         <div className="section-title">경력사항</div>
         {cvData.experience.length > 0 ? (
-          cvData.experience.map((exp, index) => (
+          cvData.experience.map((exp) => (
             <div key={exp.id} className="experience-item">
               <div className="company-position">{exp.company} - {exp.position}</div>
               <div className="description">{exp.description || '업무 설명을 입력하세요'}</div>
@@ -158,7 +158,7 @@ export function Preview({ className = '' }: PreviewProps) {
       <div className="cv-experience-period">
         <div className="period">
           {cvData.experience.length > 0 ? 
-            cvData.experience.map((exp, index) => (
+            cvData.experience.map((exp) => (
               <div key={exp.id} className="experience-period-item">
                 {formatDate(exp.startDate)} - {formatDate(exp.endDate)}
               </div>
@@ -172,7 +172,7 @@ export function Preview({ className = '' }: PreviewProps) {
       <div className="cv-projects">
         <div className="section-title">프로젝트</div>
         {cvData.projects.length > 0 ? (
-          cvData.projects.map((project, index) => (
+          cvData.projects.map((project) => (
             <div key={project.id} className="project-item">
               <div className="project-name">{project.name || '프로젝트명'}</div>
               <div className="project-description">{project.description || '프로젝트 설명을 입력하세요'}</div>
@@ -190,7 +190,7 @@ export function Preview({ className = '' }: PreviewProps) {
       <div className="cv-project-period">
         <div className="period">
           {cvData.projects.length > 0 ? 
-            cvData.projects.map((project, index) => (
+            cvData.projects.map((project) => (
               <div key={project.id} className="project-period-item">
                 {formatDate(project.startDate)} - {formatDate(project.endDate)}
               </div>
@@ -327,7 +327,7 @@ export function Preview({ className = '' }: PreviewProps) {
       <div className="preview-section">
         <h2 className="preview-section-title">경력사항</h2>
         <div className="preview-experience-list">
-          {cvData.experience.map((exp, index) => (
+          {cvData.experience.map((exp) => (
             <div key={exp.id} className="preview-experience-item">
               <div className="preview-experience-header">
                 <h3 className="preview-experience-title">
@@ -372,7 +372,7 @@ export function Preview({ className = '' }: PreviewProps) {
       <div className="preview-section">
         <h2 className="preview-section-title">교육사항</h2>
         <div className="preview-education-list">
-          {cvData.education.map((edu, index) => (
+          {cvData.education.map((edu) => (
             <div key={edu.id} className="preview-education-item">
               <div className="preview-education-header">
                 <h3 className="preview-education-title">
@@ -462,7 +462,7 @@ export function Preview({ className = '' }: PreviewProps) {
       <div className="preview-section">
         <h2 className="preview-section-title">프로젝트</h2>
         <div className="preview-project-list">
-          {cvData.projects.map((project, index) => (
+          {cvData.projects.map((project) => (
             <div key={project.id} className="preview-project-item">
               <div className="preview-project-header">
                 <h3 className="preview-project-title">
