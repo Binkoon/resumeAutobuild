@@ -326,7 +326,7 @@
 
 /* 헤더 스타일 */
 .main-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 50%, #a855f7 100%);
   color: white;
   padding: 2rem 0;
   margin-bottom: 2rem;

@@ -48,16 +48,19 @@ export async function translateText(request: TranslationRequest): Promise<Transl
   }
 }
 
-// 무료 대안: LibreTranslate API
+// 무료 대안: LibreTranslate API (CORS 에러 방지)
 export async function translateWithLibreTranslate(request: TranslationRequest): Promise<TranslationResponse> {
   try {
     console.log('번역 요청:', request);
     
+    // CORS 에러를 방지하기 위해 mode: 'cors' 명시적 설정
     const response = await fetch('https://libretranslate.com/translate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
+      mode: 'cors', // CORS 모드 명시적 설정
       body: JSON.stringify({
         q: request.text,
         source: request.from,
@@ -85,6 +88,11 @@ export async function translateWithLibreTranslate(request: TranslationRequest): 
   } catch (error) {
     console.error('LibreTranslate 번역 오류:', error);
     
+    // CORS 에러나 네트워크 에러인 경우 더 자세한 로깅
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      console.warn('CORS 또는 네트워크 에러가 발생했습니다. 기본 번역을 사용합니다.');
+    }
+    
     // 간단한 한국어-영어 번역 (테스트용)
     if (request.from === 'ko' && request.to === 'en') {
       const simpleTranslations: Record<string, string> = {
@@ -103,9 +111,64 @@ export async function translateWithLibreTranslate(request: TranslationRequest): 
         '이메일': 'Email',
         'GitHub': 'GitHub',
         'LinkedIn': 'LinkedIn',
+        '이름': 'Name',
+        '직함': 'Job Title',
+        '회사': 'Company',
+        '기간': 'Period',
+        '설명': 'Description',
+        '학력': 'Education',
+        '전공': 'Major',
+        '학위': 'Degree',
+        '졸업': 'Graduation',
+        '수상': 'Awards',
+        '자격증': 'Certifications',
+        '활동': 'Activities',
+        '봉사': 'Volunteer',
+        '취미': 'Hobbies',
+        '관심사': 'Interests',
       };
       
       const translated = simpleTranslations[request.text] || request.text;
+      return {
+        translatedText: translated,
+        success: true,
+        error: 'LibreTranslate API 오류로 인해 기본 번역을 사용했습니다.',
+      };
+    }
+    
+    // 영어-한국어 번역도 추가
+    if (request.from === 'en' && request.to === 'ko') {
+      const reverseTranslations: Record<string, string> = {
+        'Hello': '안녕하세요',
+        'Thank you': '감사합니다',
+        'Resume': '이력서',
+        'Experience': '경력',
+        'Education': '교육',
+        'Project': '프로젝트',
+        'Skills': '스킬',
+        'Languages': '언어',
+        'Self Introduction': '자기소개',
+        'Contact': '연락처',
+        'Address': '주소',
+        'Phone Number': '전화번호',
+        'Email': '이메일',
+        'Name': '이름',
+        'Job Title': '직함',
+        'Company': '회사',
+        'Period': '기간',
+        'Description': '설명',
+        'Major': '전공',
+        'Degree': '학위',
+        'Graduation': '졸업',
+        'Awards': '수상',
+        'Certifications': '자격증',
+        'Activities': '활동',
+        'Volunteer': '봉사',
+        'Hobbies': '취미',
+        'Interests': '관심사',
+      };
+      
+      const translated = reverseTranslations[request.text] || request.text;
       return {
         translatedText: translated,
         success: true,

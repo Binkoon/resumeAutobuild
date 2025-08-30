@@ -8,6 +8,8 @@ export interface CVTemplate {
   description: string;
   sections: string[];
   isATSCompatible: boolean;
+  atsFriendly?: boolean;
+  creative?: boolean;
   recommendedFor: string[];
 }
 
@@ -132,6 +134,7 @@ export interface PersonalInfo {
   jobTitle: string; // 직무명
   website?: string; // 개인 웹사이트
   portfolio?: string; // 포트폴리오 링크
+  profilePhoto?: string; // 프로필 사진 (base64 또는 URL)
   isRequired: boolean; // 필수 항목 여부
 }
 
@@ -168,6 +171,7 @@ export interface CVData {
   // 메타데이터
   lastModified: string;
   version: string;
+  headerColor?: string; // 헤더 색상 (Cascade 템플릿용)
 }
 
 // CV 템플릿 설정 상수
@@ -178,6 +182,8 @@ export const CV_TEMPLATES: Record<CVType, CVTemplate> = {
     description: '경력 중심의 표준 이력서. 최신 경력부터 과거 순으로 정렬',
     sections: ['contact', 'summary', 'experience', 'education', 'skills', 'languages', 'projects'],
     isATSCompatible: true,
+    atsFriendly: true,
+    creative: false,
     recommendedFor: ['경력자', '직무 변경', '일반 지원']
   },
   
@@ -187,6 +193,8 @@ export const CV_TEMPLATES: Record<CVType, CVTemplate> = {
     description: '사이드바와 메인 콘텐츠가 균형잡힌 현대적인 레이아웃',
     sections: ['contact', 'summary', 'education', 'experience', 'projects', 'certifications', 'languages', 'skills'],
     isATSCompatible: true,
+    atsFriendly: true,
+    creative: true,
     recommendedFor: ['경력자', '전문직', '현대적 디자인 선호자', '정보량이 많은 지원자']
   }
 };
@@ -194,21 +202,21 @@ export const CV_TEMPLATES: Record<CVType, CVTemplate> = {
 // 섹션별 표시 여부 결정 함수
 export const getSectionVisibility = (cvType: CVType, section: string): boolean => {
   const template = CV_TEMPLATES[cvType];
-  return template.sections.includes(section);
+  return template?.sections?.includes(section) || false;
 };
 
 // 유형별 필수 섹션
 export const getRequiredSections = (cvType: CVType): string[] => {
   const template = CV_TEMPLATES[cvType];
-  return template.sections.filter(section => 
+  return template?.sections?.filter(section => 
     ['contact', 'summary', 'experience', 'education'].includes(section)
-  );
+  ) || [];
 };
 
 // 유형별 선택 섹션
 export const getOptionalSections = (cvType: CVType): string[] => {
   const template = CV_TEMPLATES[cvType];
-  return template.sections.filter(section => 
+  return template?.sections?.filter(section => 
     !['contact', 'summary', 'experience', 'education'].includes(section)
-  );
+  ) || [];
 };

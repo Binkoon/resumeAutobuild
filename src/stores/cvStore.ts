@@ -23,6 +23,9 @@ interface CVStore {
   // CV 타입 관리
   setCVType: (type: CVType) => void;
   
+  // 헤더 색상 관리
+  setHeaderColor: (color: string) => void;
+  
   // 개인정보 관련 액션
   updatePersonalInfo: (field: keyof PersonalInfo, value: string) => void;
   
@@ -127,6 +130,16 @@ export const useCVStore = create<CVStore>()(
           cvData: {
             ...state.cvData,
             type
+          }
+        }));
+      },
+      
+      // 헤더 색상 설정
+      setHeaderColor: (color: string) => {
+        set((state) => ({
+          cvData: {
+            ...state.cvData,
+            headerColor: color
           }
         }));
       },

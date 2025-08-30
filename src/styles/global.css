@@ -8,6 +8,16 @@
 /* CSS 변수 정의 */
 :root {
   --cv-font-family: 'Arial, sans-serif';
+  
+  /* 색상 변수 */
+  --color-primary: #0ea5e9;
+  --color-primary-hover: #0284c7;
+  --color-secondary: #64748b;
+  --color-secondary-hover: #475569;
+  --color-accent-success: #10b981;
+  --color-accent-success-hover: #059669;
+  --color-neutral-500: #64748b;
+  --color-neutral-600: #475569;
 }
 
 /* 기본 타이포그래피 */
@@ -412,11 +422,13 @@ body {
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(11, 1fr);
   gap: 8px;
-  max-width: 210mm; /* A4 너비 */
+  width: 100%; /* 전체 너비 사용 */
+  max-width: 100%; /* 최대 너비를 100%로 설정 */
   margin: 0 auto;
   padding: 20px;
   background: white;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
 }
 
 /* 사이드바 (개인정보) */
@@ -431,6 +443,19 @@ body {
 .template-cascade .cv-sidebar .personal-info {
   text-align: center;
   margin-bottom: 30px;
+}
+
+.template-cascade .cv-sidebar .profile-photo {
+  margin-bottom: 20px;
+}
+
+.template-cascade .cv-sidebar .profile-photo-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e2e8f0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .template-cascade .cv-sidebar .name {

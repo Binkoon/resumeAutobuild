@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { GhostTextarea } from './GhostTextarea';
 import { useCVStore } from '../../stores/cvStore';
 import { useUIStore } from '../../stores/uiStore';
@@ -349,36 +350,86 @@ export function SectionEditor({ type }: SectionEditorProps) {
   return (
     <div className="section">
       <div className="section-header">
-        <button
+        <motion.button
           onClick={addItem}
           className={`btn ${getButtonClassByType(type)}`}
+          whileHover={{ 
+            scale: 1.05,
+            transition: { duration: 0.2 }
+          }}
+          whileTap={{ scale: 0.95 }}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
         >
-          <svg className="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <motion.svg 
+            className="btn-icon" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+            whileHover={{ rotate: 90 }}
+            transition={{ duration: 0.2 }}
+          >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
+          </motion.svg>
             추가
-        </button>
+        </motion.button>
       </div>
       
       <div className="section-content">
-        {items.map((item, index) => (
-          <div key={item.id}>
-            {renderItemForm(item, index)}
-          </div>
-        ))}
+        <AnimatePresence>
+          {items.map((item, index) => (
+            <motion.div 
+              key={item.id}
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              transition={{ 
+                duration: 0.3,
+                type: "spring",
+                stiffness: 200,
+                damping: 20
+              }}
+              layout
+            >
+              {renderItemForm(item, index)}
+            </motion.div>
+          ))}
+        </AnimatePresence>
         
-        {items.length === 0 && (
-          <div className="section-empty">
-            <svg className="section-empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <div className="section-empty-text">
-              {type === 'experience' && '아직 경력사항이 없습니다. 추가해보세요!'}
-              {type === 'education' && '아직 교육사항이 없습니다. 추가해보세요!'}
-              {type === 'project' && '아직 프로젝트가 없습니다. 추가해보세요!'}
-            </div>
-          </div>
-        )}
+        <AnimatePresence>
+          {items.length === 0 && (
+            <motion.div 
+              className="section-empty"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+            >
+              <motion.svg 
+                className="section-empty-icon" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </motion.svg>
+              <motion.div 
+                className="section-empty-text"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                {type === 'experience' && '아직 경력사항이 없습니다. 추가해보세요!'}
+                {type === 'education' && '아직 교육사항이 없습니다. 추가해보세요!'}
+                {type === 'project' && '아직 프로젝트가 없습니다. 추가해보세요!'}
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

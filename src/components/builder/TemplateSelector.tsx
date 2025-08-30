@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useCVStore } from '../../stores/cvStore';
 import { CV_TEMPLATES } from '../../types/cv';
 
@@ -15,9 +16,33 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
   };
 
   return (
-    <div className="template-selector-modal">
-      <div className="template-selector-overlay" onClick={onClose}></div>
-      <div className="template-selector-content">
+    <AnimatePresence>
+      <motion.div 
+        className="template-selector-modal"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <motion.div 
+          className="template-selector-overlay" 
+          onClick={onClose}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        />
+        <motion.div 
+          className="template-selector-content"
+          initial={{ scale: 0.8, opacity: 0, y: 50 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.8, opacity: 0, y: 50 }}
+          transition={{ 
+            type: "spring", 
+            stiffness: 300, 
+            damping: 25,
+            duration: 0.4 
+          }}
+        >
         <div className="template-selector-header">
           <h2 className="template-selector-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -38,11 +63,25 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
         </div>
 
         <div className="template-grid">
-          {Object.entries(CV_TEMPLATES).map(([type, template]) => (
-            <div
+          {Object.entries(CV_TEMPLATES).map(([type, template], index) => (
+            <motion.div
               key={type}
               className={`template-card ${cvData.type === type ? 'template-card-active' : ''}`}
               onClick={() => handleTemplateSelect(type)}
+              initial={{ opacity: 0, y: 30, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ 
+                delay: index * 0.1,
+                duration: 0.5,
+                type: "spring",
+                stiffness: 200
+              }}
+              whileHover={{ 
+                scale: 1.05,
+                y: -5,
+                transition: { duration: 0.2 }
+              }}
+              whileTap={{ scale: 0.95 }}
             >
               <div className="template-card-header">
                 <h3 className="template-card-title">{template.name}</h3>
@@ -77,14 +116,23 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
               </div>
               
               {cvData.type === type && (
-                <div className="template-card-selected">
+                <motion.div 
+                  className="template-card-selected"
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ 
+                    type: "spring", 
+                    stiffness: 400, 
+                    damping: 10 
+                  }}
+                >
                   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   선택됨
-                </div>
+                </motion.div>
               )}
-            </div>
+            </motion.div>
           ))}
         </div>
 
@@ -93,7 +141,8 @@ export function TemplateSelector({ onClose }: TemplateSelectorProps) {
             템플릿을 선택하면 CV 구성이 자동으로 변경됩니다. 언제든지 다시 변경할 수 있습니다.
           </p>
         </div>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 }

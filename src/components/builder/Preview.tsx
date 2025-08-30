@@ -1,7 +1,23 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { useCVStore } from '../../stores/cvStore';
 import { formatDate } from '../../stores/utils';
-import { CV_TEMPLATES, getSectionVisibility } from '../../types/cv';
+import { CV_TEMPLATES } from '../../types/cv';
+import { formatPhoneForCountry } from '../../lib/validation';
+
+// 헤더 색상 옵션 (CVBuilder와 동일)
+const HEADER_COLOR_OPTIONS = [
+  { value: '', label: '색상 없음', color: '#f8fafc' },
+  { value: 'blue', label: '파란색', color: '#3b82f6' },
+  { value: 'green', label: '초록색', color: '#10b981' },
+  { value: 'purple', label: '보라색', color: '#8b5cf6' },
+  { value: 'red', label: '빨간색', color: '#ef4444' },
+  { value: 'orange', label: '주황색', color: '#f97316' },
+  { value: 'teal', label: '청록색', color: '#14b8a6' },
+  { value: 'pink', label: '분홍색', color: '#ec4899' },
+  { value: 'indigo', label: '남색', color: '#6366f1' },
+  { value: 'gray', label: '회색', color: '#6b7280' }
+];
 
 interface PreviewProps {
   className?: string;
@@ -10,7 +26,7 @@ interface PreviewProps {
 export function Preview({ className = '' }: PreviewProps) {
   // Zustand 스토어에서 CV 데이터 가져오기
   const { cvData } = useCVStore();
-  const template = CV_TEMPLATES[cvData.type];
+  const template = CV_TEMPLATES[cvData.type] || CV_TEMPLATES['cascade']; // 기본값으로 cascade 사용
 
   // Cascade 템플릿 렌더링
   const renderCascadeTemplate = () => (
@@ -18,6 +34,15 @@ export function Preview({ className = '' }: PreviewProps) {
       {/* 사이드바 - 개인정보 */}
       <div className="cv-sidebar">
         <div className="personal-info">
+          {cvData.personalInfo.profilePhoto && (
+            <div className="profile-photo">
+              <img 
+                src={cvData.personalInfo.profilePhoto} 
+                alt="프로필 사진" 
+                className="profile-photo-img"
+              />
+            </div>
+          )}
           <div className="name">{cvData.personalInfo.name || '이름을 입력하세요'}</div>
           <div className="contact-info">
             <div className="contact-item">
@@ -26,7 +51,10 @@ export function Preview({ className = '' }: PreviewProps) {
             </div>
             <div className="contact-item">
               <span className="contact-icon">📱</span>
-              {cvData.personalInfo.phone || '전화번호를 입력하세요'}
+              {cvData.personalInfo.phone 
+                ? formatPhoneForCountry(cvData.personalInfo.phone, cvData.personalInfo.location || '')
+                : '전화번호를 입력하세요'
+              }
             </div>
             <div className="contact-item">
               <span className="contact-icon">📍</span>
@@ -49,7 +77,17 @@ export function Preview({ className = '' }: PreviewProps) {
       </div>
 
              {/* 헤더 - 직무, 소개글 */}
-       <div className="cv-header">
+       <div 
+         className="cv-header"
+         style={{
+           backgroundColor: cvData.headerColor 
+             ? HEADER_COLOR_OPTIONS.find(opt => opt.value === cvData.headerColor)?.color || '#f8fafc'
+             : '#f8fafc',
+           color: cvData.headerColor && cvData.headerColor !== '' 
+             ? (['red', 'blue', 'green', 'purple', 'indigo', 'gray'].includes(cvData.headerColor) ? 'white' : '#1e293b')
+             : '#1e293b'
+         }}
+       >
          <div className="job-title">{cvData.personalInfo.jobTitle || '직무명을 입력하세요'}</div>
          <div className="summary">{cvData.personalInfo.summary || '자기소개를 입력하세요'}</div>
        </div>
@@ -206,12 +244,24 @@ export function Preview({ className = '' }: PreviewProps) {
   // 섹션별 렌더링 함수들
   const renderContactSection = () => (
     <div className="preview-header">
+      {cvData.personalInfo.profilePhoto && (
+        <div className="preview-profile-photo">
+          <img 
+            src={cvData.personalInfo.profilePhoto} 
+            alt="프로필 사진" 
+            className="preview-profile-photo-img"
+          />
+        </div>
+      )}
       <h1 className="preview-name">
         {cvData.personalInfo.name || '이름을 입력하세요'}
       </h1>
       <div className="preview-contact">
         <p>{cvData.personalInfo.email || '이메일을 입력하세요'}</p>
-        <p>{cvData.personalInfo.phone || '전화번호를 입력하세요'}</p>
+        <p>{cvData.personalInfo.phone 
+          ? formatPhoneForCountry(cvData.personalInfo.phone, cvData.personalInfo.location || '')
+          : '전화번호를 입력하세요'
+        }</p>
         <p>{cvData.personalInfo.location || '위치를 입력하세요'}</p>
       </div>
       <div className="preview-links">
@@ -604,20 +654,44 @@ export function Preview({ className = '' }: PreviewProps) {
   // Cascade 템플릿 렌더링
   if (cvData.type === 'cascade') {
     return (
-      <div className={`preview-container template-cascade ${className}`}>
-        <div className="cv-preview">
+      <motion.div 
+        className={`preview-container template-cascade ${className}`}
+        key="cascade-template"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.4, ease: "easeInOut" }}
+      >
+        <motion.div 
+          className="cv-preview"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
           {renderCascadeTemplate()}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     );
   }
 
   return (
-    <div className={`preview-container ${className}`}>
+    <motion.div 
+      className={`preview-container ${className}`}
+      key="chronological-template"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.4, ease: "easeInOut" }}
+    >
       {/* A4 크기 컨테이너 */}
-      <div className="preview-a4">
+      <motion.div 
+        className="preview-a4"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
         {renderSections()}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

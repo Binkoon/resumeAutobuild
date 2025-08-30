@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { SectionEditor } from './SectionEditor';
 import { Preview } from './Preview';
 import { GhostTextarea } from './GhostTextarea';
@@ -11,10 +12,25 @@ import { useUIStore } from '../../stores/uiStore';
 import { downloadCV } from '../../lib/download';
 import { CV_TEMPLATES, type CVType } from '../../types/cv';
 import { LocationDetector } from '../ui/LocationDetector';
+import { formatPhoneNumber, formatPhoneForCountry, getFieldValidationMessage, validateRequiredFields } from '../../lib/validation';
+
+// 헤더 색상 옵션
+const HEADER_COLOR_OPTIONS = [
+  { value: '', label: '색상 없음', color: '#f8fafc' },
+  { value: 'blue', label: '파란색', color: '#3b82f6' },
+  { value: 'green', label: '초록색', color: '#10b981' },
+  { value: 'purple', label: '보라색', color: '#8b5cf6' },
+  { value: 'red', label: '빨간색', color: '#ef4444' },
+  { value: 'orange', label: '주황색', color: '#f97316' },
+  { value: 'teal', label: '청록색', color: '#14b8a6' },
+  { value: 'pink', label: '분홍색', color: '#ec4899' },
+  { value: 'indigo', label: '남색', color: '#6366f1' },
+  { value: 'gray', label: '회색', color: '#6b7280' }
+];
 
 export function CVBuilder() {
   // Zustand 스토어에서 상태와 액션 가져오기
-  const { cvData, updatePersonalInfo, addSkill, removeSkill, addLanguage, removeLanguage, resetAfterCompletion, setCVType } = useCVStore();
+  const { cvData, updatePersonalInfo, addSkill, removeSkill, addLanguage, removeLanguage, resetAfterCompletion, setCVType, setHeaderColor } = useCVStore();
   const { isLoading, error } = useUIStore();
   
   // 로컬 상태
@@ -23,6 +39,7 @@ export function CVBuilder() {
   const [downloadFormat, setDownloadFormat] = useState<'pdf' | 'markdown' | 'html'>('pdf');
   const [activeSection, setActiveSection] = useState<'personal' | 'skills' | 'languages' | 'experience' | 'education' | 'projects'>('personal');
   const [selectedFont, setSelectedFont] = useState<string>('Arial');
+  const [translatorReset, setTranslatorReset] = useState(false);
 
   // 앱 시작 시 저장된 임시저장 데이터 불러오기
   useEffect(() => {
@@ -79,6 +96,9 @@ export function CVBuilder() {
       await downloadCV(cvData, downloadFormat, () => {
         // 다운로드 완료 후 초기화
         resetAfterCompletion();
+        // 번역기도 함께 초기화
+        setTranslatorReset(true);
+        setTimeout(() => setTranslatorReset(false), 100);
         alert('CV가 성공적으로 다운로드되었습니다!\n\n새로운 CV 작성을 위해 모든 데이터가 초기화되었습니다.');
       });
     } catch (error) {
@@ -91,8 +111,14 @@ export function CVBuilder() {
   const isDownloadReady = (): boolean => {
     const { personalInfo, skills, languages, experience, education, projects } = cvData;
     
-         // 기본 정보 필수 항목 확인
-     const hasBasicInfo = personalInfo.name && personalInfo.email && personalInfo.phone && personalInfo.location && personalInfo.jobTitle;
+    // 필수 개인정보 검증 (이름, 이메일, 전화번호, 직무명, 자기소개)
+    const hasRequiredPersonalInfo = validateRequiredFields({
+      name: personalInfo.name,
+      email: personalInfo.email,
+      phone: personalInfo.phone,
+      jobTitle: personalInfo.jobTitle,
+      summary: personalInfo.summary
+    });
     
     // 스킬과 언어는 최소 1개 이상
     const hasSkills = skills.length > 0;
@@ -103,7 +129,7 @@ export function CVBuilder() {
     const hasEducation = education.length > 0;
     const hasProjects = projects.length > 0;
     
-    return Boolean(hasBasicInfo && hasSkills && hasLanguages && (hasExperience || hasEducation || hasProjects));
+    return Boolean(hasRequiredPersonalInfo && hasSkills && hasLanguages && (hasExperience || hasEducation || hasProjects));
   };
 
   // 진행 상황 계산 (0-100%)
@@ -113,7 +139,15 @@ export function CVBuilder() {
     
     const { personalInfo, skills, languages, experience, education, projects } = cvData;
     
-         if (personalInfo.name && personalInfo.email && personalInfo.phone && personalInfo.location && personalInfo.jobTitle) completedSteps++;
+    // 필수 개인정보 검증
+    if (validateRequiredFields({
+      name: personalInfo.name,
+      email: personalInfo.email,
+      phone: personalInfo.phone,
+      jobTitle: personalInfo.jobTitle,
+      summary: personalInfo.summary
+    })) completedSteps++;
+    
     if (skills.length > 0) completedSteps++;
     if (languages.length > 0) completedSteps++;
     if (experience.length > 0) completedSteps++;
@@ -123,12 +157,18 @@ export function CVBuilder() {
     return Math.round((completedSteps / totalSteps) * 100);
   };
 
-  // 진행 상황 단계별 상태
+    // 진행 상황 단계별 상태
   const getStepStatus = () => {
     const { personalInfo, skills, languages, experience, education, projects } = cvData;
     
-         return {
-       personal: !!(personalInfo.name && personalInfo.email && personalInfo.phone && personalInfo.location && personalInfo.jobTitle),
+    return {
+      basicInfo: validateRequiredFields({
+        name: personalInfo.name,
+        email: personalInfo.email,
+        phone: personalInfo.phone,
+        jobTitle: personalInfo.jobTitle,
+        summary: personalInfo.summary
+      }),
       skills: skills.length > 0,
       languages: languages.length > 0,
       experience: experience.length > 0,
@@ -159,21 +199,91 @@ export function CVBuilder() {
                 </svg>
                 개인정보
               </h2>
+              
+              {/* 헤더 색상 선택 (Cascade 템플릿일 때만) */}
+              {cvData.type === 'cascade' && (
+                <div className="header-color-selector">
+                  <label className="color-selector-label">
+                    <span className="color-selector-text">헤더 색상</span>
+                    <div className="color-selector-container">
+                      <select
+                        value={cvData.headerColor || ''}
+                        onChange={(e) => setHeaderColor(e.target.value)}
+                        className="color-selector-dropdown"
+                      >
+                        {HEADER_COLOR_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      <div 
+                        className="color-preview"
+                        style={{ backgroundColor: HEADER_COLOR_OPTIONS.find(opt => opt.value === (cvData.headerColor || ''))?.color || '#f8fafc' }}
+                      ></div>
+                    </div>
+                  </label>
+                </div>
+              )}
                              <div className="input-grid input-grid-2">
-                 <div className="input-field">
-                   <input
-                     type="text"
-                     placeholder="이름"
-                     value={cvData.personalInfo.name}
-                     onChange={(e) => updatePersonalInfo('name', e.target.value)}
-                     className="form-input"
-                   />
-                 </div>
+                                 {/* 프로필 사진 업로드 */}
+                <div className="input-field">
+                  <label className="profile-photo-label">
+                    <div className="profile-photo-container">
+                      {cvData.personalInfo.profilePhoto ? (
+                        <img 
+                          src={cvData.personalInfo.profilePhoto} 
+                          alt="프로필 사진" 
+                          className="profile-photo-preview"
+                        />
+                      ) : (
+                        <div className="profile-photo-placeholder">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                          </svg>
+                          <span>프로필 사진</span>
+                        </div>
+                      )}
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            updatePersonalInfo('profilePhoto', event.target?.result as string);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="profile-photo-input"
+                    />
+                    <span className="profile-photo-text">사진 업로드 (선택사항)</span>
+                  </label>
+                </div>
+
+                <div className="input-field">
+                  <input
+                    type="text"
+                    placeholder="이름 *"
+                    value={cvData.personalInfo.name}
+                    onChange={(e) => updatePersonalInfo('name', e.target.value)}
+                    className="form-input"
+                  />
+                  {cvData.personalInfo.name && getFieldValidationMessage('name', cvData.personalInfo.name) && (
+                    <div className="validation-error">
+                      {getFieldValidationMessage('name', cvData.personalInfo.name)}
+                    </div>
+                  )}
+                </div>
                  
                  <div className="input-field">
                    <input
                      type="text"
-                     placeholder="직무명 (예: 프론트엔드 개발자)"
+                     placeholder="직무명 * (예: 프론트엔드 개발자)"
                      value={cvData.personalInfo.jobTitle}
                      onChange={(e) => updatePersonalInfo('jobTitle', e.target.value)}
                      className="form-input"
@@ -183,21 +293,35 @@ export function CVBuilder() {
                 <div className="input-field">
                   <input
                     type="email"
-                    placeholder="이메일"
+                    placeholder="이메일 * (예: example@gmail.com)"
                     value={cvData.personalInfo.email}
                     onChange={(e) => updatePersonalInfo('email', e.target.value)}
                     className="form-input"
                   />
+                  {cvData.personalInfo.email && getFieldValidationMessage('email', cvData.personalInfo.email) && (
+                    <div className="validation-error">
+                      {getFieldValidationMessage('email', cvData.personalInfo.email)}
+                    </div>
+                  )}
                 </div>
                 
                 <div className="input-field">
                   <input
                     type="tel"
-                    placeholder="전화번호 (예: 010-1234-5678)"
+                    placeholder="전화번호 * (예: 010-1234-5678)"
                     value={cvData.personalInfo.phone}
-                    onChange={(e) => updatePersonalInfo('phone', e.target.value)}
+                    onChange={(e) => {
+                      const formatted = formatPhoneNumber(e.target.value);
+                      updatePersonalInfo('phone', formatted);
+                    }}
                     className="form-input"
+                    maxLength={13}
                   />
+                  {cvData.personalInfo.phone && getFieldValidationMessage('phone', cvData.personalInfo.phone) && (
+                    <div className="validation-error">
+                      {getFieldValidationMessage('phone', cvData.personalInfo.phone)}
+                    </div>
+                  )}
                 </div>
                 
                 {/* 위치 입력 */}
@@ -242,11 +366,58 @@ export function CVBuilder() {
                 <GhostTextarea
                   value={cvData.personalInfo.summary}
                   onChange={(value) => updatePersonalInfo('summary', value)}
-                  placeholder="자기소개를 입력하세요..."
+                  placeholder="자기소개를 입력하세요... *"
                   rows={4}
                   context="personal"
                   field="summary"
                 />
+              </div>
+              
+              {/* 네비게이션 버튼 */}
+              <div className="section-navigation">
+                <div className="navigation-buttons">
+                  <button
+                    type="button"
+                    className="btn btn-secondary prev-section-btn"
+                    disabled={true}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    <span>이전 단계</span>
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={() => setActiveSection('skills')}
+                    className="btn btn-primary next-section-btn"
+                    disabled={!validateRequiredFields({
+                      name: cvData.personalInfo.name,
+                      email: cvData.personalInfo.email,
+                      phone: cvData.personalInfo.phone,
+                      jobTitle: cvData.personalInfo.jobTitle,
+                      summary: cvData.personalInfo.summary
+                    })}
+                  >
+                    <span>다음 단계: 스킬</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                  </button>
+                </div>
+                <div className="navigation-hint">
+                  {!validateRequiredFields({
+                    name: cvData.personalInfo.name,
+                    email: cvData.personalInfo.email,
+                    phone: cvData.personalInfo.phone,
+                    jobTitle: cvData.personalInfo.jobTitle,
+                    summary: cvData.personalInfo.summary
+                  }) ? (
+                    <span className="hint-text">필수 정보를 모두 입력하면 다음 단계로 진행할 수 있습니다</span>
+                  ) : (
+                    <span className="hint-text success">모든 필수 정보가 입력되었습니다!</span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -303,6 +474,41 @@ export function CVBuilder() {
                   </button>
                 </div>
               </div>
+              
+              {/* 네비게이션 버튼 */}
+              <div className="section-navigation">
+                <div className="navigation-buttons">
+                  <button
+                    type="button"
+                    onClick={() => setActiveSection('personal')}
+                    className="btn btn-secondary prev-section-btn"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    <span>이전 단계: 개인정보</span>
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={() => setActiveSection('languages')}
+                    className="btn btn-primary next-section-btn"
+                    disabled={cvData.skills.length === 0}
+                  >
+                    <span>다음 단계: 언어</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                  </button>
+                </div>
+                <div className="navigation-hint">
+                  {cvData.skills.length === 0 ? (
+                    <span className="hint-text">최소 1개 이상의 스킬을 추가하면 다음 단계로 진행할 수 있습니다</span>
+                  ) : (
+                    <span className="hint-text success">스킬이 추가되었습니다!</span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -348,6 +554,41 @@ export function CVBuilder() {
                   </span>
                 ))}
               </div>
+              
+              {/* 네비게이션 버튼 */}
+              <div className="section-navigation">
+                <div className="navigation-buttons">
+                  <button
+                    type="button"
+                    onClick={() => setActiveSection('skills')}
+                    className="btn btn-secondary prev-section-btn"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    <span>이전 단계: 스킬</span>
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={() => setActiveSection('experience')}
+                    className="btn btn-primary next-section-btn"
+                    disabled={cvData.languages.length === 0}
+                  >
+                    <span>다음 단계: 경력</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                  </button>
+                </div>
+                <div className="navigation-hint">
+                  {cvData.languages.length === 0 ? (
+                    <span className="hint-text">최소 1개 이상의 언어를 추가하면 다음 단계로 진행할 수 있습니다</span>
+                  ) : (
+                    <span className="hint-text success">언어가 추가되었습니다!</span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -363,6 +604,36 @@ export function CVBuilder() {
                 경력사항
               </h2>
               <SectionEditor type="experience" />
+              
+              {/* 네비게이션 버튼 */}
+              <div className="section-navigation">
+                <div className="navigation-buttons">
+                  <button
+                    type="button"
+                    onClick={() => setActiveSection('languages')}
+                    className="btn btn-secondary prev-section-btn"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    <span>이전 단계: 언어</span>
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={() => setActiveSection('education')}
+                    className="btn btn-primary next-section-btn"
+                  >
+                    <span>다음 단계: 교육</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                  </button>
+                </div>
+                <div className="navigation-hint">
+                  <span className="hint-text">경력사항을 추가하고 다음 단계로 진행하세요</span>
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -379,6 +650,36 @@ export function CVBuilder() {
                 교육사항
               </h2>
               <SectionEditor type="education" />
+              
+              {/* 네비게이션 버튼 */}
+              <div className="section-navigation">
+                <div className="navigation-buttons">
+                  <button
+                    type="button"
+                    onClick={() => setActiveSection('experience')}
+                    className="btn btn-secondary prev-section-btn"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    <span>이전 단계: 경력</span>
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={() => setActiveSection('projects')}
+                    className="btn btn-primary next-section-btn"
+                  >
+                    <span>다음 단계: 프로젝트</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                  </button>
+                </div>
+                <div className="navigation-hint">
+                  <span className="hint-text">교육사항을 추가하고 다음 단계로 진행하세요</span>
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -394,6 +695,40 @@ export function CVBuilder() {
                 프로젝트
               </h2>
               <SectionEditor type="project" />
+              
+              {/* 네비게이션 버튼 */}
+              <div className="section-navigation">
+                <div className="navigation-buttons">
+                  <button
+                    type="button"
+                    onClick={() => setActiveSection('education')}
+                    className="btn btn-secondary prev-section-btn"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    <span>이전 단계: 교육</span>
+                  </button>
+                  
+                  <button
+                    type="button"
+                    className="btn btn-success next-section-btn"
+                    disabled={false}
+                    onClick={() => {
+                      // 프로젝트 섹션이 마지막이므로 완료 메시지 표시
+                      alert('모든 섹션이 완료되었습니다! 이제 CV를 다운로드할 수 있습니다.');
+                    }}
+                  >
+                    <span>CV 완성!</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                  </button>
+                </div>
+                <div className="navigation-hint">
+                  <span className="hint-text success">프로젝트를 추가하고 CV 작성을 완료하세요!</span>
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -417,6 +752,9 @@ export function CVBuilder() {
           onReset={() => {
             if (confirm('정말로 모든 CV 데이터를 초기화하시겠습니까?\n\n이 작업은 되돌릴 수 없으며, 작성 중인 모든 내용이 사라집니다.')) {
               resetAfterCompletion();
+              // 번역기도 함께 초기화
+              setTranslatorReset(true);
+              setTimeout(() => setTranslatorReset(false), 100); // 짧은 시간 후 false로 리셋
               alert('CV 데이터가 초기화되었습니다.\n\n새로운 CV 작성을 시작할 수 있습니다.');
             }
           }}
@@ -532,7 +870,7 @@ export function CVBuilder() {
                     >
                       <span className="section-icon">{section.icon}</span>
                       <span className="section-label">{section.label}</span>
-                      {getStepStatus()[section.id as keyof ReturnType<typeof getStepStatus>] && (
+                      {getStepStatus()[section.id === 'personal' ? 'basicInfo' : section.id as keyof ReturnType<typeof getStepStatus>] && (
                         <span className="section-complete">✓</span>
                       )}
                     </button>
@@ -545,7 +883,7 @@ export function CVBuilder() {
             <div className="card mt-4">
               <div className="card-body">
                 <h3 className="card-title">번역 도구</h3>
-                <Translator />
+                <Translator reset={translatorReset} />
               </div>
             </div>
             
@@ -565,7 +903,9 @@ export function CVBuilder() {
                 오른쪽에서 실시간으로 CV를 확인할 수 있습니다. A4 크기로 최적화되어 있어 인쇄 시에도 완벽합니다.
               </p>
             </div>
-            <Preview />
+            <AnimatePresence mode="wait">
+              <Preview key={cvData.type} />
+            </AnimatePresence>
           </div>
         </div>
         

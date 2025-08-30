@@ -5,9 +5,10 @@ import type { TranslationRequest } from '../../lib/translation';
 interface TranslatorProps {
   onTranslate?: (translatedText: string) => void;
   placeholder?: string;
+  reset?: boolean; // 초기화 트리거
 }
 
-export function Translator({ onTranslate, placeholder = "번역할 텍스트를 입력하세요" }: TranslatorProps) {
+export function Translator({ onTranslate, placeholder = "번역할 텍스트를 입력하세요", reset = false }: TranslatorProps) {
   const [inputText, setInputText] = useState('');
   const [translatedText, setTranslatedText] = useState('');
   const [fromLang, setFromLang] = useState('ko');
@@ -15,6 +16,19 @@ export function Translator({ onTranslate, placeholder = "번역할 텍스트를 
   const [isTranslating, setIsTranslating] = useState(false);
   const [translationStatus, setTranslationStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+
+  // reset prop이 true가 되면 모든 상태 초기화
+  React.useEffect(() => {
+    if (reset) {
+      setInputText('');
+      setTranslatedText('');
+      setFromLang('ko');
+      setToLang('en');
+      setIsTranslating(false);
+      setTranslationStatus('idle');
+      setErrorMessage('');
+    }
+  }, [reset]);
 
   const handleTranslate = async () => {
     if (!inputText.trim()) return;
