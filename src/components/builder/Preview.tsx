@@ -4,6 +4,7 @@ import { useCVStore } from '../../stores/cvStore';
 import { formatDate } from '../../stores/utils';
 import { CV_TEMPLATES } from '../../types/cv';
 import { formatPhoneForCountry } from '../../lib/validation';
+import { StarRating } from '../ui/StarRating';
 
 // 헤더 색상 옵션 (CVBuilder와 동일)
 const HEADER_COLOR_OPTIONS = [
@@ -27,6 +28,21 @@ export function Preview({ className = '' }: PreviewProps) {
   // Zustand 스토어에서 CV 데이터 가져오기
   const { cvData } = useCVStore();
   const template = CV_TEMPLATES[cvData.type] || CV_TEMPLATES['cascade']; // 기본값으로 cascade 사용
+
+  // 헤더 색상 계산
+  const headerColor = cvData.headerColor 
+    ? HEADER_COLOR_OPTIONS.find(opt => opt.value === cvData.headerColor)?.color || '#f8fafc'
+    : '#f8fafc';
+  
+  const headerTextColor = cvData.headerColor && cvData.headerColor !== '' 
+    ? (['red', 'blue', 'green', 'purple', 'indigo', 'gray'].includes(cvData.headerColor) ? 'white' : '#1e293b')
+    : '#1e293b';
+
+  // CSS 변수로 div2에 색상 적용
+  React.useEffect(() => {
+    document.documentElement.style.setProperty('--header-bg-color', headerColor);
+    document.documentElement.style.setProperty('--header-text-color', headerTextColor);
+  }, [headerColor, headerTextColor]);
 
   // Cascade 템플릿 렌더링
   const renderCascadeTemplate = () => (
@@ -80,12 +96,8 @@ export function Preview({ className = '' }: PreviewProps) {
        <div 
          className="cv-header"
          style={{
-           backgroundColor: cvData.headerColor 
-             ? HEADER_COLOR_OPTIONS.find(opt => opt.value === cvData.headerColor)?.color || '#f8fafc'
-             : '#f8fafc',
-           color: cvData.headerColor && cvData.headerColor !== '' 
-             ? (['red', 'blue', 'green', 'purple', 'indigo', 'gray'].includes(cvData.headerColor) ? 'white' : '#1e293b')
-             : '#1e293b'
+           backgroundColor: headerColor,
+           color: headerTextColor
          }}
        >
          <div className="job-title">{cvData.personalInfo.jobTitle || '직무명을 입력하세요'}</div>
@@ -228,13 +240,23 @@ export function Preview({ className = '' }: PreviewProps) {
       {/* 기술스택 */}
       <div className="cv-skills">
         <div className="section-title">기술스택</div>
-        <div className="skills-list">
+        <div className="skills-list-with-rating">
           {cvData.skills.length > 0 ? (
             cvData.skills.map((skill, index) => (
-              <span key={index} className="skill-tag">{skill}</span>
+              <div key={index} className="skill-item-preview">
+                <span className="skill-name-preview">{skill}</span>
+                <StarRating
+                  score={cvData.skillScores[skill] || 3}
+                  readonly={true}
+                  size="sm"
+                />
+              </div>
             ))
           ) : (
-            <span className="skill-tag">기술을 입력하세요</span>
+            <div className="skill-item-preview">
+              <span className="skill-name-preview">기술을 입력하세요</span>
+              <StarRating score={3} readonly={true} size="sm" />
+            </div>
           )}
         </div>
       </div>

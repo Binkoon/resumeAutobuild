@@ -1,0 +1,63 @@
+/* 별점 컴포넌트 스타일 */
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem; /* 6px */
+}
+
+.star-rating--sm {
+  gap: 0.25rem; /* 4px */
+}
+
+.star-rating--lg {
+  gap: 0.5rem; /* 8px */
+}
+
+.star-rating__button {
+  background: none;
+  border: none;
+  padding: 0.125rem; /* 2px */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #d1d5db; /* 회색 */
+  width: 1.25rem; /* 20px */
+  height: 1.25rem; /* 20px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.star-rating--sm .star-rating__button {
+  width: 1rem; /* 16px */
+  height: 1rem; /* 16px */
+}
+
+.star-rating--lg .star-rating__button {
+  width: 1.5rem; /* 24px */
+  height: 1.5rem; /* 24px */
+}
+
+.star-rating__button--active {
+  color: #fbbf24; /* 노란색 */
+}
+
+.star-rating__button--readonly {
+  cursor: default;
+}
+
+.star-rating__button:not(.star-rating__button--readonly):hover {
+  transform: scale(1.1);
+  color: #f59e0b; /* 더 진한 노란색 */
+}
+
+.star-rating__icon {
+  width: 100%;
+  height: 100%;
+}
+
+.star-rating__score {
+  margin-left: 0.5rem; /* 8px */
+  font-size: 0.875rem; /* 14px */
+  color: #6b7280;
+  font-weight: 500;
+}

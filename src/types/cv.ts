@@ -154,6 +154,7 @@ export interface CVData {
   
   // 스킬 및 언어
   skills: string[];
+  skillScores: Record<string, number>; // 스킬별 점수 (1-5점)
   skillCategories?: SkillCategory[]; // Functional/Combination용
   languages: string[];
   

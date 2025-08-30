@@ -4,6 +4,7 @@ import { SectionEditor } from './SectionEditor';
 import { Preview } from './Preview';
 import { GhostTextarea } from './GhostTextarea';
 import { SkillDropdown } from '../ui/SkillDropdown';
+import { StarRating } from '../ui/StarRating';
 import { Translator } from '../ui/Translator';
 import { Header } from '../ui/Header';
 import { Footer } from '../ui/Footer';
@@ -30,7 +31,7 @@ const HEADER_COLOR_OPTIONS = [
 
 export function CVBuilder() {
   // Zustand 스토어에서 상태와 액션 가져오기
-  const { cvData, updatePersonalInfo, addSkill, removeSkill, addLanguage, removeLanguage, resetAfterCompletion, setCVType, setHeaderColor } = useCVStore();
+  const { cvData, updatePersonalInfo, addSkill, removeSkill, addLanguage, removeLanguage, resetAfterCompletion, setCVType, setHeaderColor, setSkillScore } = useCVStore();
   const { isLoading, error } = useUIStore();
   
   // 로컬 상태
@@ -439,18 +440,28 @@ export function CVBuilder() {
                 <SkillDropdown onSkillSelect={handleSkillSelect} />
               </div>
               
-              {/* 기존 스킬 목록 */}
-              <div className="tag-list">
+              {/* 스킬 목록 with 별점 */}
+              <div className="skills-with-rating">
                 {cvData.skills.map((skill, index) => (
-                  <span key={index} className="tag">
-                    {skill}
-                    <button
-                      onClick={() => removeSkill(index)}
-                      className="tag-remove"
-                    >
-                      ×
-                    </button>
-                  </span>
+                  <div key={index} className="skill-item-with-rating">
+                    <div className="skill-name-section">
+                      <span className="skill-name">{skill}</span>
+                      <button
+                        onClick={() => removeSkill(index)}
+                        className="skill-remove-btn"
+                        title="스킬 제거"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <div className="skill-rating-section">
+                      <StarRating
+                        score={cvData.skillScores[skill] || 3}
+                        onScoreChange={(score) => setSkillScore(skill, score)}
+                        size="sm"
+                      />
+                    </div>
+                  </div>
                 ))}
               </div>
               

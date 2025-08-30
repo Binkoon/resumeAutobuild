@@ -984,6 +984,83 @@
   }
 }
 
+/* 스킬 별점 스타일 */
+.skills-with-rating {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.skill-item-with-rating {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.skill-item-with-rating:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.skill-name-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.skill-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.skill-remove-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px 6px;
+  font-size: 18px;
+  line-height: 1;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.skill-remove-btn:hover {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.skill-rating-section {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* 빈 스킬 목록 상태 */
+.skills-with-rating:empty::after {
+  content: "추가된 스킬이 없습니다. 위의 드롭다운에서 스킬을 선택하거나 직접 입력해주세요.";
+  display: block;
+  text-align: center;
+  color: #94a3b8;
+  font-style: italic;
+  padding: 32px 16px;
+  background: #f8fafc;
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+}
+
 /* 통합된 CV 컨트롤 스타일 */
 .cv-controls-header {
   margin-bottom: 24px;

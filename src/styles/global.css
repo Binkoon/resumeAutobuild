@@ -488,11 +488,17 @@ body {
 /* 헤더 (직무, 소개글) */
 .template-cascade .cv-header {
   grid-column: span 4 / span 4;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--header-bg-color, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+  color: var(--header-text-color, white);
   padding: 30px;
   border-radius: 8px;
   text-align: center;
+}
+
+/* div2 클래스에도 동일한 색상 적용 */
+.template-cascade .div2 {
+  background: var(--header-bg-color, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+  color: var(--header-text-color, white);
 }
 
 .template-cascade .cv-header .job-title {
@@ -858,6 +864,30 @@ body {
   font-size: 14px;
   font-weight: 500;
   border: 1px solid #e2e8f0;
+}
+
+/* 별점이 있는 스킬 목록 스타일 */
+.template-cascade .cv-skills .skills-list-with-rating {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.template-cascade .cv-skills .skill-item-preview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.template-cascade .cv-skills .skill-name-preview {
+  font-size: 13px;
+  font-weight: 500;
+  color: #475569;
+  flex: 1;
 }
 
 /* 모바일 반응형 */

@@ -51,6 +51,7 @@ interface CVStore {
   addSkill: (skill: string) => void;
   removeSkill: (index: number) => void;
   reorderSkills: (fromIndex: number, toIndex: number) => void;
+  setSkillScore: (skill: string, score: number) => void;
   
   // 스킬 카테고리 관련 액션 (Functional/Combination용)
   addSkillCategory: (category: SkillCategory) => void;
@@ -114,6 +115,7 @@ const createInitialCVData = (type: CVType = 'cascade'): CVData => ({
   education: [],
   projects: [],
   skills: [],
+  skillScores: {},
   languages: [],
   lastModified: new Date().toISOString(),
   version: '1.0.0'
@@ -301,19 +303,30 @@ export const useCVStore = create<CVStore>()(
           set((state) => ({
             cvData: {
               ...state.cvData,
-              skills: [...state.cvData.skills, skill.trim()]
+              skills: [...state.cvData.skills, skill.trim()],
+              skillScores: {
+                ...state.cvData.skillScores,
+                [skill.trim()]: 3 // 기본 점수 3점
+              }
             }
           }));
         }
       },
       
       removeSkill: (index: number) => {
-        set((state) => ({
-          cvData: {
-            ...state.cvData,
-            skills: state.cvData.skills.filter((_, i) => i !== index)
-          }
-        }));
+        set((state) => {
+          const skillToRemove = state.cvData.skills[index];
+          const newSkillScores = { ...state.cvData.skillScores };
+          delete newSkillScores[skillToRemove];
+          
+          return {
+            cvData: {
+              ...state.cvData,
+              skills: state.cvData.skills.filter((_, i) => i !== index),
+              skillScores: newSkillScores
+            }
+          };
+        });
       },
       
       reorderSkills: (fromIndex: number, toIndex: number) => {
@@ -328,6 +341,20 @@ export const useCVStore = create<CVStore>()(
             }
           };
         });
+      },
+      
+      setSkillScore: (skill: string, score: number) => {
+        // 점수는 1-5 사이로 제한
+        const validScore = Math.min(5, Math.max(1, score));
+        set((state) => ({
+          cvData: {
+            ...state.cvData,
+            skillScores: {
+              ...state.cvData.skillScores,
+              [skill]: validScore
+            }
+          }
+        }));
       },
       
       // 스킬 카테고리 관리

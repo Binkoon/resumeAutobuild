@@ -1,0 +1,204 @@
+/* ===== OS별 스타일링 ===== */
+
+/* Windows 스타일 */
+.os-windows {
+  /* Windows에서 더 선명한 폰트 렌더링 */
+  -webkit-font-smoothing: subpixel-antialiased;
+  -moz-osx-font-smoothing: auto;
+  text-rendering: optimizeSpeed;
+}
+
+.os-windows body {
+  font-family: 'Segoe UI', 'Microsoft YaHei', 'Malgun Gothic', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.os-windows .card {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+}
+
+.os-windows .form-input {
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
+}
+
+.os-windows .form-input:focus {
+  border-color: #0078d4;
+  box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.15);
+}
+
+.os-windows .btn {
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.os-windows .btn-primary {
+  background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%);
+}
+
+.os-windows .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* macOS 스타일 */
+.os-macos {
+  /* macOS에서 부드러운 폰트 렌더링 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.os-macos body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', 'Helvetica', sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.os-macos .card {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.os-macos .form-input {
+  border: 1px solid #d1d5db;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  font-weight: 400;
+}
+
+.os-macos .form-input:focus {
+  border-color: #007aff;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.os-macos .btn {
+  font-weight: 500;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  border: none;
+}
+
+.os-macos .btn-primary {
+  background: linear-gradient(135deg, #007aff 0%, #0051d5 100%);
+}
+
+.os-macos .btn:hover {
+  transform: translateY(-0.5px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Linux 스타일 */
+.os-linux {
+  /* Linux에서 표준 폰트 렌더링 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.os-linux body {
+  font-family: 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.os-linux .card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+}
+
+.os-linux .form-input {
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  font-weight: 400;
+}
+
+.os-linux .form-input:focus {
+  border-color: #77216f;
+  box-shadow: 0 0 0 3px rgba(119, 33, 111, 0.15);
+}
+
+.os-linux .btn {
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.os-linux .btn-primary {
+  background: linear-gradient(135deg, #77216f 0%, #5e2750 100%);
+}
+
+.os-linux .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Unknown OS (기본 스타일) */
+.os-unknown {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.os-unknown body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* OS별 색상 변수 오버라이드 */
+.os-windows {
+  --color-primary: #0078d4;
+  --color-primary-hover: #106ebe;
+  --color-accent: #00bcf2;
+}
+
+.os-macos {
+  --color-primary: #007aff;
+  --color-primary-hover: #0051d5;
+  --color-accent: #30d158;
+}
+
+.os-linux {
+  --color-primary: #77216f;
+  --color-primary-hover: #5e2750;
+  --color-accent: #e95420;
+}
+
+/* OS별 특별한 애니메이션 효과 */
+.os-windows .card {
+  transition: all 0.2s ease;
+}
+
+.os-macos .card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.os-linux .card {
+  transition: all 0.25s ease-in-out;
+}
+
+/* Windows에서 더 강한 그림자 효과 */
+.os-windows .card:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* macOS에서 부드러운 호버 효과 */
+.os-macos .card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+/* Linux에서 중간 정도의 호버 효과 */
+.os-linux .card:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}

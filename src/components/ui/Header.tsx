@@ -68,7 +68,7 @@ export function Header({
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.6 }}
             >
-              CV 자동 빌더
+              Secret Resume
             </motion.h1>
             <motion.p 
               className="main-subtitle"
