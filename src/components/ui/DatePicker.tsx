@@ -6,12 +6,15 @@ interface DatePickerProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  minDate?: string; // 최소 날짜 (YYYY-MM-DD 형식)
+  maxDate?: string; // 최대 날짜 (YYYY-MM-DD 형식)
 }
 
-export function DatePicker({ value, onChange, placeholder = "날짜 선택", className = "", disabled = false }: DatePickerProps) {
+export function DatePicker({ value, onChange, placeholder = "날짜 선택", className = "", disabled = false, minDate, maxDate }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(value ? new Date(value) : null);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const datePickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -39,10 +42,10 @@ export function DatePicker({ value, onChange, placeholder = "날짜 선택", cla
   };
 
   const formatDisplayDate = (date: Date): string => {
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    return `${year}년 ${month}월 ${day}일`;
+    const year = String(date.getFullYear()).slice(-2); // 2자리 연도
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${day}/${month}/${year}`;
   };
 
   const getDaysInMonth = (date: Date): number => {
@@ -53,8 +56,26 @@ export function DatePicker({ value, onChange, placeholder = "날짜 선택", cla
     return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
   };
 
+  const isDateValid = (date: Date): boolean => {
+    if (minDate) {
+      const min = new Date(minDate);
+      if (date < min) return false;
+    }
+    if (maxDate) {
+      const max = new Date(maxDate);
+      if (date > max) return false;
+    }
+    return true;
+  };
+
   const handleDateSelect = (day: number) => {
     const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+    
+    if (!isDateValid(newDate)) {
+      // 날짜가 유효하지 않으면 선택하지 않음
+      return;
+    }
+    
     setSelectedDate(newDate);
     onChange(formatDate(newDate));
     setIsOpen(false);
@@ -76,6 +97,25 @@ export function DatePicker({ value, onChange, placeholder = "날짜 선택", cla
     setIsOpen(false);
   };
 
+  const calculateDropdownPosition = () => {
+    if (datePickerRef.current) {
+      const rect = datePickerRef.current.getBoundingClientRect();
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+      
+      setDropdownPosition({
+        top: rect.bottom + scrollTop + 5,
+        left: rect.left + scrollLeft
+      });
+    }
+  };
+
+  const handleInputClick = () => {
+    if (!disabled) {
+      setIsOpen(!isOpen);
+    }
+  };
+
   const renderCalendar = () => {
     const daysInMonth = getDaysInMonth(currentDate);
     const firstDayOfMonth = getFirstDayOfMonth(currentDate);
@@ -94,18 +134,24 @@ export function DatePicker({ value, onChange, placeholder = "날짜 선택", cla
 
     // 현재 달의 날들
     for (let day = 1; day <= daysInMonth; day++) {
+      const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
       const isSelected = selectedDate && 
         selectedDate.getDate() === day && 
         selectedDate.getMonth() === currentDate.getMonth() && 
         selectedDate.getFullYear() === currentDate.getFullYear();
       
-      const isToday = new Date().toDateString() === new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toDateString();
+      const isToday = new Date().toDateString() === dayDate.toDateString();
+      const isValid = isDateValid(dayDate);
       
       days.push(
         <div
           key={day}
-          className={`calendar-day current-month ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''}`}
-          onClick={() => handleDateSelect(day)}
+          className={`calendar-day current-month ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''} ${!isValid ? 'disabled' : ''}`}
+          onClick={() => isValid && handleDateSelect(day)}
+          style={{ 
+            cursor: isValid ? 'pointer' : 'not-allowed',
+            opacity: isValid ? 1 : 0.3
+          }}
         >
           {day}
         </div>
@@ -131,10 +177,11 @@ export function DatePicker({ value, onChange, placeholder = "날짜 선택", cla
         type="text"
         value={selectedDate ? formatDisplayDate(selectedDate) : ''}
         placeholder={placeholder}
-        onClick={() => !disabled && setIsOpen(!isOpen)}
+        onClick={handleInputClick}
         readOnly
         disabled={disabled}
         className="date-input"
+        style={{ cursor: disabled ? 'not-allowed' : 'pointer' }}
       />
       
       {isOpen && (

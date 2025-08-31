@@ -6,6 +6,7 @@ import type {
   ExperienceItem, 
   EduItem, 
   ProjectItem, 
+  ExternalEducationItem,
   CVType,
   SkillCategory,
   Publication,
@@ -41,6 +42,12 @@ interface CVStore {
   deleteEducation: (index: number) => void;
   reorderEducation: (fromIndex: number, toIndex: number) => void;
   
+  // 외부 교육사항 관련 액션
+  addExternalEducation: (education: ExternalEducationItem) => void;
+  updateExternalEducation: (index: number, education: ExternalEducationItem) => void;
+  deleteExternalEducation: (index: number) => void;
+  reorderExternalEducation: (fromIndex: number, toIndex: number) => void;
+  
   // 프로젝트 관련 액션
   addProject: (project: ProjectItem) => void;
   updateProject: (index: number, project: ProjectItem) => void;
@@ -61,6 +68,7 @@ interface CVStore {
   // 언어 관련 액션
   addLanguage: (language: string) => void;
   removeLanguage: (index: number) => void;
+  setLanguageProficiency: (language: string, proficiency: string) => void;
   reorderLanguages: (fromIndex: number, toIndex: number) => void;
   
   // 학술 관련 액션 (Academic용)
@@ -113,10 +121,12 @@ const createInitialCVData = (type: CVType = 'cascade'): CVData => ({
   academicBackground: [],
   experience: [],
   education: [],
+  externalEducation: [],
   projects: [],
   skills: [],
   skillScores: {},
   languages: [],
+  languageProficiencies: {},
   lastModified: new Date().toISOString(),
   version: '1.0.0'
 });
@@ -246,6 +256,52 @@ export const useCVStore = create<CVStore>()(
             cvData: {
               ...state.cvData,
               education: newEducation
+            }
+          };
+        });
+      },
+      
+      // 외부 교육사항 관리
+      addExternalEducation: (education: ExternalEducationItem) => {
+        set((state) => ({
+          cvData: {
+            ...state.cvData,
+            externalEducation: [...state.cvData.externalEducation, education]
+          }
+        }));
+      },
+      
+      updateExternalEducation: (index: number, education: ExternalEducationItem) => {
+        set((state) => {
+          const newExternalEducation = [...state.cvData.externalEducation];
+          newExternalEducation[index] = education;
+          return {
+            cvData: {
+              ...state.cvData,
+              externalEducation: newExternalEducation
+            }
+          };
+        });
+      },
+      
+      deleteExternalEducation: (index: number) => {
+        set((state) => ({
+          cvData: {
+            ...state.cvData,
+            externalEducation: state.cvData.externalEducation.filter((_, i) => i !== index)
+          }
+        }));
+      },
+      
+      reorderExternalEducation: (fromIndex: number, toIndex: number) => {
+        set((state) => {
+          const newExternalEducation = [...state.cvData.externalEducation];
+          const [removed] = newExternalEducation.splice(fromIndex, 1);
+          newExternalEducation.splice(toIndex, 0, removed);
+          return {
+            cvData: {
+              ...state.cvData,
+              externalEducation: newExternalEducation
             }
           };
         });
@@ -400,10 +456,31 @@ export const useCVStore = create<CVStore>()(
       },
       
       removeLanguage: (index: number) => {
+        set((state) => {
+          const languageToRemove = state.cvData.languages[index];
+          const newLanguageProficiencies = { ...state.cvData.languageProficiencies };
+          if (languageToRemove) {
+            delete newLanguageProficiencies[languageToRemove];
+          }
+          
+          return {
+            cvData: {
+              ...state.cvData,
+              languages: (state.cvData.languages || []).filter((_, i) => i !== index),
+              languageProficiencies: newLanguageProficiencies
+            }
+          };
+        });
+      },
+      
+      setLanguageProficiency: (language: string, proficiency: string) => {
         set((state) => ({
           cvData: {
             ...state.cvData,
-            languages: (state.cvData.languages || []).filter((_, i) => i !== index)
+            languageProficiencies: {
+              ...state.cvData.languageProficiencies,
+              [language]: proficiency
+            }
           }
         }));
       },
@@ -601,6 +678,17 @@ export const useCVStore = create<CVStore>()(
     {
       name: 'cv-storage',
       partialize: (state) => ({ cvData: state.cvData }),
+      migrate: (persistedState: any, _version: number) => {
+        // 기존 데이터에 languageProficiencies가 없는 경우 초기화
+        if (persistedState?.cvData && !persistedState.cvData.languageProficiencies) {
+          persistedState.cvData.languageProficiencies = {};
+        }
+        // 기존 데이터에 externalEducation이 없는 경우 초기화
+        if (persistedState?.cvData && !persistedState.cvData.externalEducation) {
+          persistedState.cvData.externalEducation = [];
+        }
+        return persistedState;
+      },
     }
   )
 );

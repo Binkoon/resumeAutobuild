@@ -11,6 +11,74 @@
   box-sizing: border-box;
 }
 
+/* 폼 셀렉트 필드 */
+.form-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #334155;
+  background-color: white;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.form-select:hover {
+  border-color: #cbd5e1;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* 언어 아이템 레이아웃 */
+.language-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.language-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.language-item:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.language-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.language-proficiency {
+  flex: 0 0 180px;
+}
+
+@media (max-width: 640px) {
+  .language-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .language-proficiency {
+    flex: none;
+  }
+}
+
 .form-input::placeholder {
   color: #94a3b8;
 }
@@ -1168,5 +1236,215 @@
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
+  }
+}
+
+/* 날짜 입력 그룹 */
+.date-input-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.date-input-group .date-picker {
+  flex: 1;
+}
+
+/* 체크박스 스타일 */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.checkbox-input {
+  width: 16px;
+  height: 16px;
+  accent-color: #3b82f6;
+  cursor: pointer;
+}
+
+.checkbox-text {
+  font-size: 14px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.checkbox-label:hover .checkbox-text {
+  color: #1f2937;
+}
+
+/* 반응형 디자인 - 체크박스 */
+@media (max-width: 768px) {
+  .date-input-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .checkbox-label {
+    justify-content: center;
+  }
+}
+
+/* 위치 확인 모달 */
+.location-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+.location-modal {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.location-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.location-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.location-modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.location-modal-close:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.location-modal-content {
+  padding: 24px;
+}
+
+.location-detected-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.location-detected-info .location-icon {
+  width: 20px;
+  height: 20px;
+  fill: #3b82f6;
+  flex-shrink: 0;
+}
+
+.location-detected-info p {
+  margin: 0;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.location-input-group {
+  margin-bottom: 24px;
+}
+
+.location-input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #374151;
+  font-size: 14px;
+}
+
+.location-edit-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #334155;
+  background-color: white;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.location-edit-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.location-edit-input::placeholder {
+  color: #94a3b8;
+}
+
+.location-modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.location-modal-actions .btn {
+  min-width: 80px;
+}
+
+/* 반응형 디자인 - 위치 모달 */
+@media (max-width: 480px) {
+  .location-modal-overlay {
+    padding: 16px;
+  }
+  
+  .location-modal {
+    max-width: none;
+  }
+  
+  .location-modal-header {
+    padding: 16px 20px 12px;
+  }
+  
+  .location-modal-content {
+    padding: 20px;
+  }
+  
+  .location-modal-actions {
+    flex-direction: column;
+  }
+  
+  .location-modal-actions .btn {
+    width: 100%;
   }
 }

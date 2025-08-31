@@ -1,4 +1,4 @@
-import type { ExperienceItem, EduItem, ProjectItem, SkillCategory, Publication, Conference, Grant, Teaching, Award } from '../types/cv';
+import type { ExperienceItem, EduItem, ProjectItem, ExternalEducationItem, SkillCategory, Publication, Conference, Grant, Teaching, Award } from '../types/cv';
 
 // 새로운 아이템 생성 유틸리티
 export const createEmptyExperience = (): ExperienceItem => ({
@@ -42,6 +42,17 @@ export const createEmptyProject = (): ProjectItem => ({
   isCurrent: false,
   impact: '',
   teamSize: 1,
+  isRequired: false
+});
+
+export const createEmptyExternalEducation = (): ExternalEducationItem => ({
+  id: Date.now().toString(),
+  institution: '',
+  course: '',
+  startDate: '',
+  endDate: '',
+  isCurrent: false,
+  description: '',
   isRequired: false
 });
 
@@ -100,12 +111,14 @@ export const createEmptyAward = (): Award => ({
 });
 
 // 아이템 타입별 생성 함수
-export const createEmptyItem = (type: 'experience' | 'education' | 'project') => {
+export const createEmptyItem = (type: 'experience' | 'education' | 'externalEducation' | 'project') => {
   switch (type) {
     case 'experience':
       return createEmptyExperience();
     case 'education':
       return createEmptyEducation();
+    case 'externalEducation':
+      return createEmptyExternalEducation();
     case 'project':
       return createEmptyProject();
     default:
@@ -117,6 +130,14 @@ export const createEmptyItem = (type: 'experience' | 'education' | 'project') =>
 export const formatDate = (date: string): string => {
   if (!date) return '';
   if (date === '현재' || date.toLowerCase() === 'present') return '현재';
+  
+  // YYYY-MM-DD 형식을 DD/MM/YY 형식으로 변환
+  if (date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    const [year, month, day] = date.split('-');
+    const shortYear = year.slice(-2);
+    return `${day}/${month}/${shortYear}`;
+  }
+  
   return date;
 };
 

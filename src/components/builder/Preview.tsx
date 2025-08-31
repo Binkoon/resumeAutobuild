@@ -28,6 +28,15 @@ export function Preview({ className = '' }: PreviewProps) {
   // Zustand 스토어에서 CV 데이터 가져오기
   const { cvData } = useCVStore();
   const template = CV_TEMPLATES[cvData.type] || CV_TEMPLATES['cascade']; // 기본값으로 cascade 사용
+  
+  // 페이지 높이 모니터링 상태
+  const [pageWarning, setPageWarning] = React.useState<{
+    show: boolean;
+    type: 'info' | 'warning';
+    message: string;
+  }>({ show: false, type: 'info', message: '' });
+  
+  const previewRef = React.useRef<HTMLDivElement>(null);
 
   // 헤더 색상 계산
   const headerColor = cvData.headerColor 
@@ -43,6 +52,50 @@ export function Preview({ className = '' }: PreviewProps) {
     document.documentElement.style.setProperty('--header-bg-color', headerColor);
     document.documentElement.style.setProperty('--header-text-color', headerTextColor);
   }, [headerColor, headerTextColor]);
+
+  // 페이지 높이 모니터링
+  React.useEffect(() => {
+    const checkPageHeight = () => {
+      if (!previewRef.current) return;
+      
+      const element = previewRef.current;
+      const height = element.scrollHeight;
+      const a4Height = 297; // A4 높이 (mm)
+      const twoPageHeight = a4Height * 2; // 2페이지 높이 (mm)
+      
+      // mm를 px로 변환 (대략 3.78px = 1mm)
+      const heightInMm = height / 3.78;
+      
+      if (heightInMm > twoPageHeight) {
+        setPageWarning({
+          show: true,
+          type: 'warning',
+          message: '⚠️ 이력서가 2페이지를 초과했습니다. 내용을 줄여주세요.'
+        });
+      } else if (heightInMm > a4Height) {
+        setPageWarning({
+          show: true,
+          type: 'info',
+          message: '📄 이력서가 2페이지 분량입니다.'
+        });
+      } else {
+        setPageWarning({ show: false, type: 'info', message: '' });
+      }
+    };
+
+    // 초기 체크
+    checkPageHeight();
+
+    // ResizeObserver로 높이 변화 감지
+    const resizeObserver = new ResizeObserver(checkPageHeight);
+    if (previewRef.current) {
+      resizeObserver.observe(previewRef.current);
+    }
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [cvData]); // cvData가 변경될 때마다 체크
 
   // Cascade 템플릿 렌더링
   const renderCascadeTemplate = () => (
@@ -86,6 +139,61 @@ export function Preview({ className = '' }: PreviewProps) {
               <div className="contact-item">
                 <span className="contact-icon">🔗</span>
                 <a href={cvData.personalInfo.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 자격사항 */}
+        <div className="cv-certifications">
+          <div className="section-title">자격사항</div>
+          <div className="certification-item">
+            <div className="cert-name">자격증명</div>
+            <div className="cert-org">발급기관</div>
+          </div>
+        </div>
+
+        {/* 어학사항 */}
+        <div className="cv-languages">
+          <div className="section-title">어학사항</div>
+          {cvData.languages.length > 0 ? (
+            cvData.languages.map((lang, index) => (
+              <div key={index} className="language-item">
+                <div className="lang-name">{lang}</div>
+                <div className="lang-score">{cvData.languageProficiencies?.[lang] || 'Basic'}</div>
+              </div>
+            ))
+          ) : (
+            <div className="language-item">
+              <div className="lang-name">언어명</div>
+              <div className="lang-score">수준</div>
+            </div>
+          )}
+        </div>
+
+        {/* 기술스택 */}
+        <div className="cv-skills">
+          <div className="section-title">기술스택</div>
+          <div className="skills-list-with-rating">
+            {cvData.skills.length > 0 ? (
+              cvData.skills.map((skill, index) => (
+                <div key={index} className="skill-item-preview">
+                  <span className="skill-name-preview">{skill}</span>
+                  <StarRating
+                    score={cvData.skillScores[skill] || 3}
+                    readonly={true}
+                    size="sm"
+                  />
+                </div>
+              ))
+            ) : (
+              <div className="skill-item-preview">
+                <span className="skill-name-preview">기술명</span>
+                <StarRating
+                  score={3}
+                  readonly={true}
+                  size="sm"
+                />
               </div>
             )}
           </div>
@@ -200,66 +308,7 @@ export function Preview({ className = '' }: PreviewProps) {
         </div>
       </div>
 
-      {/* 자격사항 */}
-      <div className="cv-certifications">
-        <div className="section-title">자격사항</div>
-        <div className="certification-item">
-          <div className="cert-name">자격증명</div>
-          <div className="cert-org">발급기관</div>
-        </div>
-      </div>
 
-      {/* 자격 취득날짜 */}
-      <div className="cv-cert-date">
-        <div className="date">취득날짜</div>
-      </div>
-
-      {/* 어학사항 */}
-      <div className="cv-languages">
-        <div className="section-title">어학사항</div>
-        {cvData.languages.length > 0 ? (
-          cvData.languages.map((lang, index) => (
-            <div key={index} className="language-item">
-              <div className="lang-name">{lang}</div>
-              <div className="lang-score">점수</div>
-            </div>
-          ))
-        ) : (
-          <div className="language-item">
-            <div className="lang-name">언어명</div>
-            <div className="lang-score">점수</div>
-          </div>
-        )}
-      </div>
-
-      {/* 어학 점수 취득날짜 */}
-      <div className="cv-lang-date">
-        <div className="date">취득날짜</div>
-      </div>
-
-      {/* 기술스택 */}
-      <div className="cv-skills">
-        <div className="section-title">기술스택</div>
-        <div className="skills-list-with-rating">
-          {cvData.skills.length > 0 ? (
-            cvData.skills.map((skill, index) => (
-              <div key={index} className="skill-item-preview">
-                <span className="skill-name-preview">{skill}</span>
-                <StarRating
-                  score={cvData.skillScores[skill] || 3}
-                  readonly={true}
-                  size="sm"
-                />
-              </div>
-            ))
-          ) : (
-            <div className="skill-item-preview">
-              <span className="skill-name-preview">기술을 입력하세요</span>
-              <StarRating score={3} readonly={true} size="sm" />
-            </div>
-          )}
-        </div>
-      </div>
     </div>
   );
 
@@ -638,9 +687,42 @@ export function Preview({ className = '' }: PreviewProps) {
         <h2 className="preview-section-title">언어</h2>
         <div className="preview-languages">
           {cvData.languages.map((language, index) => (
-            <span key={index}>
-              {language}
-            </span>
+            <div key={index} className="preview-language-item">
+              <span className="preview-language-name">{language}</span>
+              <span className="preview-language-proficiency">
+                {cvData.languageProficiencies?.[language] || 'Basic'}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  );
+
+  const renderExternalEducationSection = () => (
+    cvData.externalEducation && cvData.externalEducation.length > 0 && (
+      <div className="preview-section">
+        <h2 className="preview-section-title">외부 교육사항</h2>
+        <div className="preview-external-education-list">
+          {cvData.externalEducation.map((edu) => (
+            <div key={edu.id} className="preview-external-education-item">
+              <div className="preview-external-education-header">
+                <h3 className="preview-external-education-title">
+                  {edu.course || '교육과정명'}
+                </h3>
+                <span className="preview-external-education-date">
+                  {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
+                </span>
+              </div>
+              <h4 className="preview-external-education-institution">
+                {edu.institution || '교육기관명'}
+              </h4>
+              {edu.description && (
+                <p className="preview-external-education-description">
+                  {edu.description}
+                </p>
+              )}
+            </div>
           ))}
         </div>
       </div>
@@ -653,6 +735,7 @@ export function Preview({ className = '' }: PreviewProps) {
     summary: renderSummarySection,
     experience: renderExperienceSection,
     education: renderEducationSection,
+    externalEducation: renderExternalEducationSection,
     skills: renderSkillsSection,
     keySkills: renderKeySkillsSection,
     projects: renderProjectsSection,
@@ -689,9 +772,17 @@ export function Preview({ className = '' }: PreviewProps) {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
+          ref={previewRef}
         >
           {renderCascadeTemplate()}
         </motion.div>
+        
+        {/* 페이지 경고 메시지 */}
+        {pageWarning.show && (
+          <div className={`page-warning ${pageWarning.type === 'warning' ? 'warning' : ''}`}>
+            {pageWarning.message}
+          </div>
+        )}
       </motion.div>
     );
   }
@@ -711,9 +802,17 @@ export function Preview({ className = '' }: PreviewProps) {
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.1 }}
+        ref={previewRef}
       >
         {renderSections()}
       </motion.div>
+      
+      {/* 페이지 경고 메시지 */}
+      {pageWarning.show && (
+        <div className={`page-warning ${pageWarning.type === 'warning' ? 'warning' : ''}`}>
+          {pageWarning.message}
+        </div>
+      )}
     </motion.div>
   );
 }

@@ -41,7 +41,7 @@
   border: 2px solid #e1e5e9;
   border-radius: 12px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+  z-index: 9999;
   margin-top: 5px;
   overflow: hidden;
   min-width: 300px;

@@ -8,7 +8,7 @@ const Preview = lazy(() => import('./Preview').then(module => ({ default: module
 const GhostTextarea = lazy(() => import('./GhostTextarea').then(module => ({ default: module.GhostTextarea })));
 const SkillDropdown = lazy(() => import('../ui/SkillDropdown').then(module => ({ default: module.SkillDropdown })));
 const StarRating = lazy(() => import('../ui/StarRating').then(module => ({ default: module.StarRating })));
-const Translator = lazy(() => import('../ui/Translator').then(module => ({ default: module.Translator })));
+
 const Header = lazy(() => import('../ui/Header').then(module => ({ default: module.Header })));
 const Footer = lazy(() => import('../ui/Footer').then(module => ({ default: module.Footer })));
 import { useCVStore } from '../../stores/cvStore';
@@ -34,16 +34,16 @@ const HEADER_COLOR_OPTIONS = [
 
 export function CVBuilder() {
   // Zustand 스토어에서 상태와 액션 가져오기
-  const { cvData, updatePersonalInfo, addSkill, removeSkill, addLanguage, removeLanguage, resetAfterCompletion, setCVType, setHeaderColor, setSkillScore } = useCVStore();
+  const { cvData, updatePersonalInfo, addSkill, removeSkill, addLanguage, removeLanguage, setLanguageProficiency, resetAfterCompletion, setCVType, setHeaderColor, setSkillScore } = useCVStore();
   const { isLoading, error, setLoading, setError } = useUIStore();
   
   // 로컬 상태
   const [skillsInput, setSkillsInput] = useState('');
   const [languagesInput, setLanguagesInput] = useState('');
   const [downloadFormat, setDownloadFormat] = useState<'pdf' | 'markdown' | 'html'>('pdf');
-  const [activeSection, setActiveSection] = useState<'personal' | 'skills' | 'languages' | 'experience' | 'education' | 'projects'>('personal');
+  const [activeSection, setActiveSection] = useState<'personal' | 'skills' | 'languages' | 'experience' | 'education' | 'externalEducation' | 'projects'>('personal');
   const [selectedFont, setSelectedFont] = useState<string>('Arial');
-  const [translatorReset, setTranslatorReset] = useState(false);
+
 
   // 앱 시작 시 저장된 임시저장 데이터 불러오기
   useEffect(() => {
@@ -101,9 +101,6 @@ export function CVBuilder() {
       await downloadCV(cvData, downloadFormat, () => {
         // 다운로드 완료 후 초기화
         resetAfterCompletion();
-        // 번역기도 함께 초기화
-        setTranslatorReset(true);
-        setTimeout(() => setTranslatorReset(false), 100);
         alert('CV가 성공적으로 다운로드되었습니다!\n\n새로운 CV 작성을 위해 모든 데이터가 초기화되었습니다.');
       });
     } catch (error) {
@@ -191,6 +188,7 @@ export function CVBuilder() {
     { id: 'languages', label: '언어', icon: '🌐' },
     { id: 'experience', label: '경력', icon: '💼' },
     { id: 'education', label: '교육', icon: '🎓' },
+    { id: 'externalEducation', label: '외부교육', icon: '📚' },
     { id: 'projects', label: '프로젝트', icon: '🚀' }
   ];
 
@@ -560,17 +558,34 @@ export function CVBuilder() {
                 </button>
               </div>
               
-              <div className="tag-list mt-4">
+              <div className="language-list mt-4">
                 {cvData.languages.map((language, index) => (
-                  <span key={index} className="tag">
-                    {language}
-                    <button
-                      onClick={() => removeLanguage(index)}
-                      className="tag-remove"
-                    >
-                      ×
-                    </button>
-                  </span>
+                  <div key={index} className="language-item">
+                    <div className="language-name">
+                      <span className="tag">
+                        {language}
+                        <button
+                          onClick={() => removeLanguage(index)}
+                          className="tag-remove"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    </div>
+                    <div className="language-proficiency">
+                      <select
+                        value={cvData.languageProficiencies?.[language] || 'Basic'}
+                        onChange={(e) => setLanguageProficiency(language, e.target.value)}
+                        className="form-select"
+                      >
+                        <option value="Native">Native (모국어)</option>
+                        <option value="Fluent">Fluent (유창함)</option>
+                        <option value="Business">Business (비즈니스)</option>
+                        <option value="Intermediate">Intermediate (중급)</option>
+                        <option value="Basic">Basic (기초)</option>
+                      </select>
+                    </div>
+                  </div>
                 ))}
               </div>
               
@@ -707,6 +722,28 @@ export function CVBuilder() {
           </div>
         );
 
+      case 'externalEducation':
+        return (
+          <div className="card">
+            <div className="card-body">
+              <h2 className="card-title">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                외부 교육사항
+              </h2>
+              
+              <div className="section-content">
+                <SectionEditor type="externalEducation" />
+                
+                <div className="navigation-hint">
+                  <span className="hint-text">외부 교육사항을 추가하고 다음 단계로 진행하세요</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
       case 'projects':
         return (
           <div className="card">
@@ -803,9 +840,6 @@ export function CVBuilder() {
             onReset={() => {
               if (confirm('정말로 모든 CV 데이터를 초기화하시겠습니까?\n\n이 작업은 되돌릴 수 없으며, 작성 중인 모든 내용이 사라집니다.')) {
                 resetAfterCompletion();
-                // 번역기도 함께 초기화
-                setTranslatorReset(true);
-                setTimeout(() => setTranslatorReset(false), 100); // 짧은 시간 후 false로 리셋
                 alert('CV 데이터가 초기화되었습니다.\n\n새로운 CV 작성을 시작할 수 있습니다.');
               }
             }}
@@ -931,13 +965,6 @@ export function CVBuilder() {
               </div>
             </div>
             
-            {/* 번역기 */}
-            <div className="card mt-4">
-              <div className="card-body">
-                <h3 className="card-title">번역 도구</h3>
-                <Translator reset={translatorReset} />
-              </div>
-            </div>
             
             {/* 현재 선택된 섹션 편집 */}
             <div className="card mt-4">

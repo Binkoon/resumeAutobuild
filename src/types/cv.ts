@@ -123,6 +123,17 @@ export interface ProjectItem {
   isRequired: boolean; // 필수 항목 여부
 }
 
+export interface ExternalEducationItem {
+  id: string;
+  institution: string; // 교육기관명
+  course: string; // 교육과정명
+  startDate: string;
+  endDate: string;
+  isCurrent: boolean; // 수강중 여부
+  description?: string; // 교육 내용 설명
+  isRequired: boolean; // 필수 항목 여부
+}
+
 export interface PersonalInfo {
   name: string;
   email: string;
@@ -150,6 +161,7 @@ export interface CVData {
   // 경력 및 교육
   experience: ExperienceItem[];
   education: EduItem[];
+  externalEducation: ExternalEducationItem[]; // 외부 교육사항
   projects: ProjectItem[];
   
   // 스킬 및 언어
@@ -157,6 +169,7 @@ export interface CVData {
   skillScores: Record<string, number>; // 스킬별 점수 (1-5점)
   skillCategories?: SkillCategory[]; // Functional/Combination용
   languages: string[];
+  languageProficiencies: Record<string, string>; // 언어별 수준 (Native, Fluent, Business, Intermediate, Basic)
   
   // 학술 관련 (Academic용)
   publications?: Publication[];
@@ -192,7 +205,7 @@ export const CV_TEMPLATES: Record<CVType, CVTemplate> = {
     id: 'cascade',
     name: 'Cascade Type Resume',
     description: '사이드바와 메인 콘텐츠가 균형잡힌 현대적인 레이아웃',
-    sections: ['contact', 'summary', 'education', 'experience', 'projects', 'certifications', 'languages', 'skills'],
+    sections: ['contact', 'summary', 'education', 'externalEducation', 'experience', 'projects', 'certifications', 'languages', 'skills'],
     isATSCompatible: true,
     atsFriendly: true,
     creative: true,

@@ -42,8 +42,19 @@ async function downloadAsPDF(cvData: CVData): Promise<void> {
     
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 20;
     let yPosition = 20;
+    
+    // 페이지 추가 함수
+    const addPageIfNeeded = (requiredSpace: number = 20) => {
+      if (yPosition + requiredSpace > pageHeight - margin) {
+        doc.addPage();
+        yPosition = margin;
+        return true;
+      }
+      return false;
+    };
     
     // 제목
     doc.setFontSize(24);
@@ -96,16 +107,14 @@ async function downloadAsPDF(cvData: CVData): Promise<void> {
     
     // 경력사항
     if (cvData.experience.length > 0) {
+      addPageIfNeeded(30);
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
       doc.text('경력사항', margin, yPosition);
       yPosition += 8;
       
       cvData.experience.forEach((exp, index) => {
-        if (yPosition > doc.internal.pageSize.getHeight() - 30) {
-          doc.addPage();
-          yPosition = 20;
-        }
+        addPageIfNeeded(40);
         
         doc.setFontSize(12);
         doc.setFont('helvetica', 'bold');
@@ -131,21 +140,14 @@ async function downloadAsPDF(cvData: CVData): Promise<void> {
     
     // 교육사항
     if (cvData.education.length > 0) {
-      if (yPosition > doc.internal.pageSize.getHeight() - 30) {
-        doc.addPage();
-        yPosition = 20;
-      }
-      
+      addPageIfNeeded(30);
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
       doc.text('교육사항', margin, yPosition);
       yPosition += 8;
       
       cvData.education.forEach((edu) => {
-        if (yPosition > doc.internal.pageSize.getHeight() - 30) {
-          doc.addPage();
-          yPosition = 20;
-        }
+        addPageIfNeeded(20);
         
         doc.setFontSize(12);
         doc.setFont('helvetica', 'bold');
@@ -161,21 +163,14 @@ async function downloadAsPDF(cvData: CVData): Promise<void> {
     
     // 프로젝트
     if (cvData.projects.length > 0) {
-      if (yPosition > doc.internal.pageSize.getHeight() - 30) {
-        doc.addPage();
-        yPosition = 20;
-      }
-      
+      addPageIfNeeded(30);
       doc.setFontSize(14);
       doc.setFont('helvetica', 'bold');
       doc.text('프로젝트', margin, yPosition);
       yPosition += 8;
       
       cvData.projects.forEach((project, index) => {
-        if (yPosition > doc.internal.pageSize.getHeight() - 30) {
-          doc.addPage();
-          yPosition = 20;
-        }
+        addPageIfNeeded(40);
         
         doc.setFontSize(12);
         doc.setFont('helvetica', 'bold');

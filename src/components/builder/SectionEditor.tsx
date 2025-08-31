@@ -1,23 +1,24 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GhostTextarea } from './GhostTextarea';
+import { DatePicker } from '../ui/DatePicker';
 import { useCVStore } from '../../stores/cvStore';
 import { useUIStore } from '../../stores/uiStore';
 import { createEmptyItem } from '../../stores/utils';
-import type { ExperienceItem, EduItem, ProjectItem } from '../../types/cv';
+import type { ExperienceItem, EduItem, ProjectItem, ExternalEducationItem } from '../../types/cv';
 
 interface SectionEditorProps {
-  type: 'experience' | 'education' | 'project';
+  type: 'experience' | 'education' | 'externalEducation' | 'project';
 }
 
 export function SectionEditor({ type }: SectionEditorProps) {
   // Zustand 스토어에서 상태와 액션 가져오기
-  const { cvData, addExperience, updateExperience, deleteExperience, addEducation, updateEducation, deleteEducation, addProject, updateProject, deleteProject } = useCVStore();
+  const { cvData, addExperience, updateExperience, deleteExperience, addEducation, updateEducation, deleteEducation, addExternalEducation, updateExternalEducation, deleteExternalEducation, addProject, updateProject, deleteProject } = useCVStore();
   const { editingStates, setEditingState } = useUIStore();
   
   // 현재 섹션의 편집 상태와 아이템들
   const editingIndex = editingStates[type];
-  const items = cvData[type === 'experience' ? 'experience' : type === 'education' ? 'education' : 'projects'];
+  const items = cvData[type === 'experience' ? 'experience' : type === 'education' ? 'education' : type === 'externalEducation' ? 'externalEducation' : 'projects'];
   
   // 편집 시작 시 원본 데이터 백업
   const [originalData, setOriginalData] = React.useState<any>(null);
@@ -31,6 +32,9 @@ export function SectionEditor({ type }: SectionEditorProps) {
         break;
       case 'education':
         addEducation(newItem as EduItem);
+        break;
+      case 'externalEducation':
+        addExternalEducation(newItem as ExternalEducationItem);
         break;
       case 'project':
         addProject(newItem as ProjectItem);
@@ -66,13 +70,16 @@ export function SectionEditor({ type }: SectionEditorProps) {
     setOriginalData(null);
   };
 
-  const updateItem = (index: number, updatedItem: ExperienceItem | EduItem | ProjectItem) => {
+  const updateItem = (index: number, updatedItem: ExperienceItem | EduItem | ExternalEducationItem | ProjectItem) => {
     switch (type) {
       case 'experience':
         updateExperience(index, updatedItem as ExperienceItem);
         break;
       case 'education':
         updateEducation(index, updatedItem as EduItem);
+        break;
+      case 'externalEducation':
+        updateExternalEducation(index, updatedItem as ExternalEducationItem);
         break;
       case 'project':
         updateProject(index, updatedItem as ProjectItem);
@@ -88,6 +95,9 @@ export function SectionEditor({ type }: SectionEditorProps) {
       case 'education':
         deleteEducation(index);
         break;
+      case 'externalEducation':
+        deleteExternalEducation(index);
+        break;
       case 'project':
         deleteProject(index);
         break;
@@ -99,7 +109,7 @@ export function SectionEditor({ type }: SectionEditorProps) {
     }
   };
 
-  const renderItemForm = (item: ExperienceItem | EduItem | ProjectItem, index: number) => {
+  const renderItemForm = (item: ExperienceItem | EduItem | ExternalEducationItem | ProjectItem, index: number) => {
     const isEditing = editingIndex === index;
     
     if (!isEditing) {
@@ -109,6 +119,7 @@ export function SectionEditor({ type }: SectionEditorProps) {
             <h4 className="section-item-title">
               {type === 'experience' && (item as ExperienceItem).position}
               {type === 'education' && (item as EduItem).degree}
+              {type === 'externalEducation' && (item as ExternalEducationItem).course}
               {type === 'project' && (item as ProjectItem).name}
             </h4>
             <div className="section-item-actions">
@@ -144,6 +155,17 @@ export function SectionEditor({ type }: SectionEditorProps) {
               </div>
             )}
             
+            {type === 'externalEducation' && (
+              <div>
+                <p><strong>교육기관:</strong> {(item as ExternalEducationItem).institution}</p>
+                <p><strong>교육과정:</strong> {(item as ExternalEducationItem).course}</p>
+                <p><strong>기간:</strong> {(item as ExternalEducationItem).startDate} - {(item as ExternalEducationItem).endDate}</p>
+                {(item as ExternalEducationItem).description && (
+                  <p><strong>설명:</strong> {(item as ExternalEducationItem).description}</p>
+                )}
+              </div>
+            )}
+            
             {type === 'project' && (
               <div>
                 <p><strong>기술:</strong> {(item as ProjectItem).technologies.join(', ')}</p>
@@ -176,20 +198,37 @@ export function SectionEditor({ type }: SectionEditorProps) {
                   onChange={(e) => updateItem(index, { ...item, position: e.target.value })}
                   className="form-input"
                 />
-                <input
-                  type="text"
-                  placeholder="시작일 (YYYY-MM)"
+                <DatePicker
                   value={(item as ExperienceItem).startDate}
-                  onChange={(e) => updateItem(index, { ...item, startDate: e.target.value })}
-                  className="form-input"
+                  onChange={(date) => updateItem(index, { ...item, startDate: date })}
+                  placeholder="시작일 선택"
+                  maxDate={(item as ExperienceItem).endDate && (item as ExperienceItem).endDate !== '현재' ? (item as ExperienceItem).endDate : undefined}
                 />
-                <input
-                  type="text"
-                  placeholder="종료일 (YYYY-MM 또는 현재)"
-                  value={(item as ExperienceItem).endDate}
-                  onChange={(e) => updateItem(index, { ...item, endDate: e.target.value })}
-                  className="form-input"
-                />
+                <div className="date-input-group">
+                  <DatePicker
+                    value={(item as ExperienceItem).endDate}
+                    onChange={(date) => updateItem(index, { ...item, endDate: date })}
+                    placeholder="종료일 선택"
+                    disabled={(item as ExperienceItem).isCurrent}
+                    minDate={(item as ExperienceItem).startDate}
+                  />
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={(item as ExperienceItem).isCurrent}
+                      onChange={(e) => {
+                        const isCurrent = e.target.checked;
+                        updateItem(index, { 
+                          ...item, 
+                          isCurrent,
+                          endDate: isCurrent ? '현재' : (item as ExperienceItem).endDate
+                        });
+                      }}
+                      className="checkbox-input"
+                    />
+                    <span className="checkbox-text">재직중</span>
+                  </label>
+                </div>
                 <div className="input-grid-2" style={{ gridColumn: 'span 2' }}>
                   <GhostTextarea
                     value={(item as ExperienceItem).description}
@@ -233,20 +272,95 @@ export function SectionEditor({ type }: SectionEditorProps) {
                   onChange={(e) => updateItem(index, { ...item, gpa: e.target.value })}
                   className="form-input"
                 />
-                <input
-                  type="text"
-                  placeholder="시작일 (YYYY-MM)"
+                <DatePicker
                   value={(item as EduItem).startDate}
-                  onChange={(e) => updateItem(index, { ...item, startDate: e.target.value })}
+                  onChange={(date) => updateItem(index, { ...item, startDate: date })}
+                  placeholder="시작일 선택"
+                  maxDate={(item as EduItem).endDate && (item as EduItem).endDate !== '현재' ? (item as EduItem).endDate : undefined}
+                />
+                <div className="date-input-group">
+                  <DatePicker
+                    value={(item as EduItem).endDate}
+                    onChange={(date) => updateItem(index, { ...item, endDate: date })}
+                    placeholder="종료일 선택"
+                    disabled={(item as EduItem).isCurrent}
+                    minDate={(item as EduItem).startDate}
+                  />
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={(item as EduItem).isCurrent}
+                      onChange={(e) => {
+                        const isCurrent = e.target.checked;
+                        updateItem(index, { 
+                          ...item, 
+                          isCurrent,
+                          endDate: isCurrent ? '현재' : (item as EduItem).endDate
+                        });
+                      }}
+                      className="checkbox-input"
+                    />
+                    <span className="checkbox-text">재학중</span>
+                  </label>
+                </div>
+              </>
+            )}
+
+            {type === 'externalEducation' && (
+              <>
+                <input
+                  type="text"
+                  placeholder="교육기관명"
+                  value={(item as ExternalEducationItem).institution}
+                  onChange={(e) => updateItem(index, { ...item, institution: e.target.value })}
                   className="form-input"
                 />
                 <input
                   type="text"
-                  placeholder="종료일 (YYYY-MM 또는 현재)"
-                  value={(item as EduItem).endDate}
-                  onChange={(e) => updateItem(index, { ...item, endDate: e.target.value })}
+                  placeholder="교육과정명"
+                  value={(item as ExternalEducationItem).course}
+                  onChange={(e) => updateItem(index, { ...item, course: e.target.value })}
                   className="form-input"
                 />
+                <DatePicker
+                  value={(item as ExternalEducationItem).startDate}
+                  onChange={(date) => updateItem(index, { ...item, startDate: date })}
+                  placeholder="시작일 선택"
+                  maxDate={(item as ExternalEducationItem).endDate && (item as ExternalEducationItem).endDate !== '현재' ? (item as ExternalEducationItem).endDate : undefined}
+                />
+                <div className="date-input-group">
+                  <DatePicker
+                    value={(item as ExternalEducationItem).endDate}
+                    onChange={(date) => updateItem(index, { ...item, endDate: date })}
+                    placeholder="종료일 선택"
+                    disabled={(item as ExternalEducationItem).isCurrent}
+                    minDate={(item as ExternalEducationItem).startDate}
+                  />
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={(item as ExternalEducationItem).isCurrent}
+                      onChange={(e) => {
+                        const isCurrent = e.target.checked;
+                        updateItem(index, { 
+                          ...item, 
+                          isCurrent,
+                          endDate: isCurrent ? '현재' : (item as ExternalEducationItem).endDate
+                        });
+                      }}
+                      className="checkbox-input"
+                    />
+                    <span className="checkbox-text">수강중</span>
+                  </label>
+                </div>
+                <div className="input-grid-2" style={{ gridColumn: 'span 2' }}>
+                  <GhostTextarea
+                    value={(item as ExternalEducationItem).description || ''}
+                    onChange={(value) => updateItem(index, { ...item, description: value })}
+                    placeholder="교육 내용 설명을 입력하세요..."
+                    rows={3}
+                  />
+                </div>
               </>
             )}
 
@@ -280,20 +394,37 @@ export function SectionEditor({ type }: SectionEditorProps) {
                   onChange={(e) => updateItem(index, { ...item, liveUrl: e.target.value })}
                   className="form-input"
                 />
-                <input
-                  type="text"
-                  placeholder="시작일 (YYYY-MM)"
+                <DatePicker
                   value={(item as ProjectItem).startDate}
-                  onChange={(e) => updateItem(index, { ...item, startDate: e.target.value })}
-                  className="form-input"
+                  onChange={(date) => updateItem(index, { ...item, startDate: date })}
+                  placeholder="시작일 선택"
+                  maxDate={(item as ProjectItem).endDate && (item as ProjectItem).endDate !== '현재' ? (item as ProjectItem).endDate : undefined}
                 />
-                <input
-                  type="text"
-                  placeholder="종료일 (YYYY-MM 또는 현재)"
-                  value={(item as ProjectItem).endDate}
-                  onChange={(e) => updateItem(index, { ...item, endDate: e.target.value })}
-                  className="form-input"
-                />
+                <div className="date-input-group">
+                  <DatePicker
+                    value={(item as ProjectItem).endDate}
+                    onChange={(date) => updateItem(index, { ...item, endDate: date })}
+                    placeholder="종료일 선택"
+                    disabled={(item as ProjectItem).isCurrent}
+                    minDate={(item as ProjectItem).startDate}
+                  />
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={(item as ProjectItem).isCurrent}
+                      onChange={(e) => {
+                        const isCurrent = e.target.checked;
+                        updateItem(index, { 
+                          ...item, 
+                          isCurrent,
+                          endDate: isCurrent ? '현재' : (item as ProjectItem).endDate
+                        });
+                      }}
+                      className="checkbox-input"
+                    />
+                    <span className="checkbox-text">진행중</span>
+                  </label>
+                </div>
                 <div className="input-grid-2" style={{ gridColumn: 'span 2' }}>
                   <GhostTextarea
                     value={(item as ProjectItem).description}
@@ -425,6 +556,7 @@ export function SectionEditor({ type }: SectionEditorProps) {
               >
                 {type === 'experience' && '아직 경력사항이 없습니다. 추가해보세요!'}
                 {type === 'education' && '아직 교육사항이 없습니다. 추가해보세요!'}
+                {type === 'externalEducation' && '아직 외부 교육사항이 없습니다. 추가해보세요!'}
                 {type === 'project' && '아직 프로젝트가 없습니다. 추가해보세요!'}
               </motion.div>
             </motion.div>
