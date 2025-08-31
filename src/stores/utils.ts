@@ -18,11 +18,12 @@ export const createEmptyExperience = (): ExperienceItem => ({
 export const createEmptyEducation = (): EduItem => ({
   id: Date.now().toString(),
   school: '',
-  degree: '',
+  degree: 'bachelor',
   field: '',
   startDate: '',
   endDate: '',
   isCurrent: false,
+  status: 'graduated',
   gpa: '',
   relevantCourses: [],
   thesis: '',

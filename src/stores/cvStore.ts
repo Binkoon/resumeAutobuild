@@ -687,6 +687,14 @@ export const useCVStore = create<CVStore>()(
         if (persistedState?.cvData && !persistedState.cvData.externalEducation) {
           persistedState.cvData.externalEducation = [];
         }
+        // 기존 교육사항 데이터에 status와 degree가 없는 경우 기본값 설정
+        if (persistedState?.cvData?.education) {
+          persistedState.cvData.education = persistedState.cvData.education.map((edu: any) => ({
+            ...edu,
+            status: edu.status || 'graduated',
+            degree: edu.degree || 'bachelor'
+          }));
+        }
         return persistedState;
       },
     }

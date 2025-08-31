@@ -140,6 +140,7 @@ export function Header({
                     transition={{ duration: 1.5, delay: 0.8, ease: "easeInOut" }}
                     strokeDashoffset="50"
                   />
+                  
                   {/* 중앙 아이콘 */}
                   <motion.circle
                     className="progress-center"
@@ -151,8 +152,9 @@ export function Header({
                     animate={{ scale: 1 }}
                     transition={{ duration: 0.5, delay: 1.2 }}
                   />
+                  
                 </svg>
-                
+                {progressPercentage}%
                 {/* 중앙 텍스트 */}
                 <motion.div 
                   className="progress-text-modern"
@@ -167,7 +169,7 @@ export function Header({
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ duration: 0.3 }}
                   >
-                    {progressPercentage}%
+                    
                   </motion.span>
                   <motion.span 
                     className="progress-label-modern"
@@ -175,7 +177,9 @@ export function Header({
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 1.6 }}
                   >
+              
                   </motion.span>
+      
                 </motion.div>
                 
                 {/* 진행률에 따른 아이콘 */}

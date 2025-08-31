@@ -15,6 +15,7 @@ export function DatePicker({ value, onChange, placeholder = "날짜 선택", cla
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(value ? new Date(value) : null);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const [showYearMonthPicker, setShowYearMonthPicker] = useState(false);
   const datePickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -97,6 +98,50 @@ export function DatePicker({ value, onChange, placeholder = "날짜 선택", cla
     setIsOpen(false);
   };
 
+  const goToYearMonth = (year: number, month: number) => {
+    setCurrentDate(new Date(year, month, 1));
+    setShowYearMonthPicker(false);
+  };
+
+  const generateYearOptions = (): number[] => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    const startYear = minDate ? new Date(minDate).getFullYear() : currentYear - 50;
+    const endYear = maxDate ? new Date(maxDate).getFullYear() : currentYear + 10;
+    
+    for (let year = startYear; year <= endYear; year++) {
+      years.push(year);
+    }
+    return years;
+  };
+
+  const generateMonthOptions = (): { value: number; label: string }[] => {
+    const months = [
+      { value: 0, label: '1월' },
+      { value: 1, label: '2월' },
+      { value: 2, label: '3월' },
+      { value: 3, label: '4월' },
+      { value: 4, label: '5월' },
+      { value: 5, label: '6월' },
+      { value: 6, label: '7월' },
+      { value: 7, label: '8월' },
+      { value: 8, label: '9월' },
+      { value: 9, label: '10월' },
+      { value: 10, label: '11월' },
+      { value: 11, label: '12월' }
+    ];
+
+    // minDate/maxDate가 있을 때 해당 월들만 필터링
+    if (minDate || maxDate) {
+      return months.filter(month => {
+        const testDate = new Date(currentDate.getFullYear(), month.value, 1);
+        return isDateValid(testDate);
+      });
+    }
+
+    return months;
+  };
+
   const calculateDropdownPosition = () => {
     if (datePickerRef.current) {
       const rect = datePickerRef.current.getBoundingClientRect();
@@ -113,6 +158,7 @@ export function DatePicker({ value, onChange, placeholder = "날짜 선택", cla
   const handleInputClick = () => {
     if (!disabled) {
       setIsOpen(!isOpen);
+      setShowYearMonthPicker(false);
     }
   };
 
@@ -171,6 +217,58 @@ export function DatePicker({ value, onChange, placeholder = "날짜 선택", cla
     return days;
   };
 
+  const renderYearMonthPicker = () => {
+    const years = generateYearOptions();
+    const months = generateMonthOptions();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+
+    return (
+      <div className="year-month-picker">
+        <div className="year-month-header">
+          <button 
+            onClick={() => setShowYearMonthPicker(false)}
+            className="back-btn"
+          >
+            ← 캘린더로 돌아가기
+          </button>
+        </div>
+        
+        <div className="year-month-content">
+          <div className="year-section">
+            <h4>연도 선택</h4>
+            <div className="year-grid">
+              {years.map(year => (
+                <button
+                  key={year}
+                  onClick={() => goToYearMonth(year, currentMonth)}
+                  className={`year-btn ${year === currentYear ? 'selected' : ''}`}
+                >
+                  {year}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          <div className="month-section">
+            <h4>월 선택</h4>
+            <div className="month-grid">
+              {months.map(month => (
+                <button
+                  key={month.value}
+                  onClick={() => goToYearMonth(currentYear, month.value)}
+                  className={`month-btn ${month.value === currentMonth ? 'selected' : ''}`}
+                >
+                  {month.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className={`date-picker ${className}`} ref={datePickerRef}>
       <input
@@ -186,17 +284,25 @@ export function DatePicker({ value, onChange, placeholder = "날짜 선택", cla
       
       {isOpen && (
         <div className="calendar-dropdown">
-          <div className="calendar-header">
-            <button onClick={goToPreviousMonth} className="nav-btn">
-              ‹
-            </button>
-            <span className="current-month-year">
-              {currentDate.getFullYear()}년 {currentDate.getMonth() + 1}월
-            </span>
-            <button onClick={goToNextMonth} className="nav-btn">
-              ›
-            </button>
-          </div>
+          {showYearMonthPicker ? (
+            renderYearMonthPicker()
+          ) : (
+            <>
+              <div className="calendar-header">
+                <button onClick={goToPreviousMonth} className="nav-btn">
+                  ‹
+                </button>
+                <span 
+                  className="current-month-year clickable"
+                  onClick={() => setShowYearMonthPicker(true)}
+                  title="연/월 선택"
+                >
+                  {currentDate.getFullYear()}년 {currentDate.getMonth() + 1}월
+                </span>
+                <button onClick={goToNextMonth} className="nav-btn">
+                  ›
+                </button>
+              </div>
           
           <div className="calendar-weekdays">
             <div>일</div>
@@ -212,11 +318,13 @@ export function DatePicker({ value, onChange, placeholder = "날짜 선택", cla
             {renderCalendar()}
           </div>
           
-          <div className="calendar-footer">
-            <button onClick={goToToday} className="today-btn">
-              오늘
-            </button>
-          </div>
+              <div className="calendar-footer">
+                <button onClick={goToToday} className="today-btn">
+                  오늘
+                </button>
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

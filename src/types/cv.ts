@@ -101,6 +101,7 @@ export interface EduItem {
   startDate: string;
   endDate: string;
   isCurrent: boolean; // 재학중 여부
+  status: 'graduated' | 'enrolled' | 'dropped' | 'transferred' | 'completed' | 'suspended' | 'attending'; // 교육 상태
   gpa: string;
   relevantCourses: string[];
   thesis?: string; // 학위 논문 제목

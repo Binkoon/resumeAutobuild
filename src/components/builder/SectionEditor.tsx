@@ -17,7 +17,10 @@ export function SectionEditor({ type }: SectionEditorProps) {
   const { editingStates, setEditingState } = useUIStore();
   
   // 현재 섹션의 편집 상태와 아이템들
-  const editingIndex = editingStates[type];
+  const editingIndex = type === 'experience' ? editingStates.experience 
+    : type === 'education' ? editingStates.education
+    : type === 'externalEducation' ? editingStates.externalEducation
+    : editingStates.project;
   const items = cvData[type === 'experience' ? 'experience' : type === 'education' ? 'education' : type === 'externalEducation' ? 'externalEducation' : 'projects'];
   
   // 편집 시작 시 원본 데이터 백업
@@ -150,8 +153,25 @@ export function SectionEditor({ type }: SectionEditorProps) {
             {type === 'education' && (
               <div>
                 <p><strong>학교:</strong> {(item as EduItem).school}</p>
+                <p><strong>학위:</strong> {
+                  (item as EduItem).degree === 'highschool' && '고등학교졸업'
+                  || (item as EduItem).degree === 'bachelor' && '학사'
+                  || (item as EduItem).degree === 'master' && '석사'
+                  || (item as EduItem).degree === 'phd' && '박사'
+                  || (item as EduItem).degree || '학위'
+                }</p>
                 <p><strong>전공:</strong> {(item as EduItem).field}</p>
                 <p><strong>기간:</strong> {(item as EduItem).startDate} - {(item as EduItem).endDate}</p>
+                <p><strong>상태:</strong> {
+                  (item as EduItem).status === 'graduated' && '졸업'
+                  || (item as EduItem).status === 'enrolled' && '재학'
+                  || (item as EduItem).status === 'attending' && '재학중'
+                  || (item as EduItem).status === 'dropped' && '중퇴'
+                  || (item as EduItem).status === 'transferred' && '편입'
+                  || (item as EduItem).status === 'completed' && '수료'
+                  || (item as EduItem).status === 'suspended' && '휴학'
+                  || '졸업'
+                }</p>
               </div>
             )}
             
@@ -251,13 +271,16 @@ export function SectionEditor({ type }: SectionEditorProps) {
                   onChange={(e) => updateItem(index, { ...item, school: e.target.value })}
                   className="form-input"
                 />
-                <input
-                  type="text"
-                  placeholder="학위"
-                  value={(item as EduItem).degree}
+                <select
+                  value={(item as EduItem).degree || 'bachelor'}
                   onChange={(e) => updateItem(index, { ...item, degree: e.target.value })}
-                  className="form-input"
-                />
+                  className="form-select"
+                >
+                  <option value="highschool">고등학교졸업</option>
+                  <option value="bachelor">학사</option>
+                  <option value="master">석사</option>
+                  <option value="phd">박사</option>
+                </select>
                 <input
                   type="text"
                   placeholder="전공"
@@ -265,6 +288,27 @@ export function SectionEditor({ type }: SectionEditorProps) {
                   onChange={(e) => updateItem(index, { ...item, field: e.target.value })}
                   className="form-input"
                 />
+                <select
+                  value={(item as EduItem).status || 'graduated'}
+                  onChange={(e) => {
+                    const status = e.target.value as any;
+                    updateItem(index, { 
+                      ...item, 
+                      status,
+                      isCurrent: status === 'enrolled' || status === 'attending',
+                      endDate: (status === 'enrolled' || status === 'attending') ? '현재' : (item as EduItem).endDate
+                    });
+                  }}
+                  className="form-select"
+                >
+                  <option value="graduated">졸업</option>
+                  <option value="enrolled">재학</option>
+                  <option value="attending">재학중</option>
+                  <option value="dropped">중퇴</option>
+                  <option value="transferred">편입</option>
+                  <option value="completed">수료</option>
+                  <option value="suspended">휴학</option>
+                </select>
                 <input
                   type="text"
                   placeholder="GPA (선택사항)"
@@ -278,31 +322,13 @@ export function SectionEditor({ type }: SectionEditorProps) {
                   placeholder="시작일 선택"
                   maxDate={(item as EduItem).endDate && (item as EduItem).endDate !== '현재' ? (item as EduItem).endDate : undefined}
                 />
-                <div className="date-input-group">
-                  <DatePicker
-                    value={(item as EduItem).endDate}
-                    onChange={(date) => updateItem(index, { ...item, endDate: date })}
-                    placeholder="종료일 선택"
-                    disabled={(item as EduItem).isCurrent}
-                    minDate={(item as EduItem).startDate}
-                  />
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={(item as EduItem).isCurrent}
-                      onChange={(e) => {
-                        const isCurrent = e.target.checked;
-                        updateItem(index, { 
-                          ...item, 
-                          isCurrent,
-                          endDate: isCurrent ? '현재' : (item as EduItem).endDate
-                        });
-                      }}
-                      className="checkbox-input"
-                    />
-                    <span className="checkbox-text">재학중</span>
-                  </label>
-                </div>
+                <DatePicker
+                  value={(item as EduItem).endDate}
+                  onChange={(date) => updateItem(index, { ...item, endDate: date })}
+                  placeholder="졸업일 선택"
+                  disabled={(item as EduItem).status === 'enrolled' || (item as EduItem).status === 'attending'}
+                  minDate={(item as EduItem).startDate}
+                />
               </>
             )}
 
@@ -465,12 +491,14 @@ export function SectionEditor({ type }: SectionEditorProps) {
     );
   };
 
-  const getButtonClassByType = (sectionType: 'experience' | 'education' | 'project') => {
+  const getButtonClassByType = (sectionType: 'experience' | 'education' | 'externalEducation' | 'project') => {
     switch (sectionType) {
       case 'experience':
         return 'btn-primary';
       case 'education':
         return 'btn-info';
+      case 'externalEducation':
+        return 'btn-warning';
       case 'project':
         return 'btn-success';
       default:

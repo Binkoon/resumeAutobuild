@@ -61,6 +61,17 @@
   font-weight: 600;
 }
 
+.current-month-year.clickable {
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.current-month-year.clickable:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .nav-btn {
   background: rgba(255, 255, 255, 0.2);
   border: none;
@@ -191,6 +202,118 @@
   }
 }
 
+/* 연/월 선택기 스타일 */
+.year-month-picker {
+  padding: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.year-month-header {
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e1e5e9;
+  padding-bottom: 15px;
+}
+
+.back-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+  background: #5a6268;
+  transform: translateY(-1px);
+}
+
+.year-month-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.year-section h4,
+.month-section h4 {
+  margin: 0 0 15px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.year-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.year-btn,
+.month-btn {
+  background: #f8f9fa;
+  border: 2px solid #e1e5e9;
+  padding: 10px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.year-btn:hover,
+.month-btn:hover {
+  background: #e3f2fd;
+  border-color: #007bff;
+  transform: translateY(-1px);
+}
+
+.year-btn.selected,
+.month-btn.selected {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.year-btn.selected:hover,
+.month-btn.selected:hover {
+  background: #0056b3;
+  border-color: #0056b3;
+}
+
+/* 반응형 연/월 선택기 */
+@media (max-width: 480px) {
+  .year-month-content {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .year-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .month-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .year-btn,
+  .month-btn {
+    padding: 8px 6px;
+    font-size: 13px;
+  }
+}
+
 /* 다크 모드 지원 */
 @media (prefers-color-scheme: dark) {
   .date-input {
@@ -234,5 +357,35 @@
   .calendar-footer {
     background: #4a5568;
     border-top-color: #718096;
+  }
+  
+  /* 다크 모드 연/월 선택기 */
+  .year-month-header {
+    border-bottom-color: #4a5568;
+  }
+  
+  .year-section h4,
+  .month-section h4 {
+    color: #e2e8f0;
+  }
+  
+  .year-btn,
+  .month-btn {
+    background: #4a5568;
+    border-color: #718096;
+    color: #e2e8f0;
+  }
+  
+  .year-btn:hover,
+  .month-btn:hover {
+    background: #2d3748;
+    border-color: #007bff;
+  }
+  
+  .year-btn.selected,
+  .month-btn.selected {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
   }
 }

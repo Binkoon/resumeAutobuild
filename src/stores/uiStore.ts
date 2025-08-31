@@ -5,6 +5,7 @@ interface UIStore {
   editingStates: {
     experience: number | null;
     education: number | null;
+    externalEducation: number | null;
     project: number | null;
   };
   
@@ -22,7 +23,7 @@ interface UIStore {
   };
   
   // 액션
-  setEditingState: (section: 'experience' | 'education' | 'project', index: number | null) => void;
+  setEditingState: (section: 'experience' | 'education' | 'externalEducation' | 'project', index: number | null) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   openModal: (modal: 'export' | 'import' | 'settings') => void;
@@ -35,6 +36,7 @@ export const useUIStore = create<UIStore>((set) => ({
   editingStates: {
     experience: null,
     education: null,
+    externalEducation: null,
     project: null
   },
   
@@ -48,7 +50,7 @@ export const useUIStore = create<UIStore>((set) => ({
   },
   
   // 액션
-  setEditingState: (section: 'experience' | 'education' | 'project', index: number | null) => {
+  setEditingState: (section: 'experience' | 'education' | 'externalEducation' | 'project', index: number | null) => {
     set((state) => ({
       editingStates: {
         ...state.editingStates,

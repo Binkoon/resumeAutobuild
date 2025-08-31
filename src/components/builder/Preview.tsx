@@ -425,7 +425,11 @@ export function Preview({ className = '' }: PreviewProps) {
             <div key={edu.id} className="preview-education-item">
               <div className="preview-education-header">
                 <h3 className="preview-education-title">
-                  {edu.degree || '학위'}
+                  {edu.degree === 'highschool' && '고등학교졸업'
+                  || edu.degree === 'bachelor' && '학사'
+                  || edu.degree === 'master' && '석사'
+                  || edu.degree === 'phd' && '박사'
+                  || edu.degree || '학위'}
                 </h3>
                 <span className="preview-education-date">
                   {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
@@ -437,6 +441,18 @@ export function Preview({ className = '' }: PreviewProps) {
               <p className="preview-education-field">
                 {edu.field || '전공'}
                 {edu.gpa && ` • GPA: ${edu.gpa}`}
+                {edu.status && (
+                  <span className="preview-education-status">
+                    {' • '}
+                    {edu.status === 'graduated' && '졸업'}
+                    {edu.status === 'enrolled' && '재학'}
+                    {edu.status === 'attending' && '재학중'}
+                    {edu.status === 'dropped' && '중퇴'}
+                    {edu.status === 'transferred' && '편입'}
+                    {edu.status === 'completed' && '수료'}
+                    {edu.status === 'suspended' && '휴학'}
+                  </span>
+                )}
               </p>
               {edu.thesis && (
                 <p className="preview-education-thesis">

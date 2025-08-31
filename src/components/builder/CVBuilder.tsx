@@ -34,7 +34,7 @@ const HEADER_COLOR_OPTIONS = [
 
 export function CVBuilder() {
   // Zustand 스토어에서 상태와 액션 가져오기
-  const { cvData, updatePersonalInfo, addSkill, removeSkill, addLanguage, removeLanguage, setLanguageProficiency, resetAfterCompletion, setCVType, setHeaderColor, setSkillScore } = useCVStore();
+  const { cvData, updatePersonalInfo, addSkill, removeSkill, addLanguage, removeLanguage, setLanguageProficiency, resetAfterCompletion, setCVType, setHeaderColor, setSkillScore, importCV } = useCVStore();
   const { isLoading, error, setLoading, setError } = useUIStore();
   
   // 로컬 상태
@@ -50,18 +50,24 @@ export function CVBuilder() {
     const savedDraft = localStorage.getItem('cvDraft');
     if (savedDraft) {
       try {
+        const draftData = JSON.parse(savedDraft);
         // 저장된 데이터가 있으면 사용자에게 복원 여부 확인
         if (confirm('이전에 임시저장된 CV 데이터가 있습니다. 복원하시겠습니까?')) {
-          // cvData를 draftData로 복원하는 함수가 필요합니다
-          // 현재는 간단히 alert로 표시
-          alert('임시저장된 데이터를 복원하려면 개발자가 구현해야 합니다.');
+          // 임시저장된 데이터를 CV 스토어에 복원
+          importCV(draftData);
+          // 복원 후 임시저장 데이터 삭제
+          localStorage.removeItem('cvDraft');
+          alert('임시저장된 데이터가 복원되었습니다.');
+        } else {
+          // 사용자가 취소하면 임시저장 데이터 삭제
+          localStorage.removeItem('cvDraft');
         }
       } catch (error) {
         console.error('임시저장 데이터 파싱 오류:', error);
         localStorage.removeItem('cvDraft');
       }
     }
-  }, []);
+  }, [importCV]);
 
   // 폰트 변경 시 CSS 변수 업데이트
   useEffect(() => {
