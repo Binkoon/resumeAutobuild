@@ -33,177 +33,48 @@ export async function downloadCV(cvData: CVData, format: DownloadFormat, onCompl
 }
 
 /**
- * PDF로 다운로드 (jsPDF 사용)
+ * PDF로 다운로드 (HTML to PDF 방식으로 한글 지원)
  */
 async function downloadAsPDF(cvData: CVData): Promise<void> {
   try {
-    // jsPDF 동적 import
-    const { jsPDF } = await import('jspdf');
+    // HTML을 PDF로 변환하는 방식 사용 (한글 지원)
+    const html = generateHTML(cvData);
     
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 20;
-    let yPosition = 20;
-    
-    // 페이지 추가 함수
-    const addPageIfNeeded = (requiredSpace: number = 20) => {
-      if (yPosition + requiredSpace > pageHeight - margin) {
-        doc.addPage();
-        yPosition = margin;
-        return true;
-      }
-      return false;
-    };
-    
-    // 제목
-    doc.setFontSize(24);
-    doc.setFont('helvetica', 'bold');
-    doc.text(cvData.personalInfo.name || '이름', pageWidth / 2, yPosition, { align: 'center' });
-    yPosition += 15;
-    
-    // 연락처 정보
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    const contactInfo = [
-      cvData.personalInfo.email,
-      cvData.personalInfo.phone,
-      cvData.personalInfo.location
-    ].filter(Boolean).join(' | ');
-    
-    if (contactInfo) {
-      doc.text(contactInfo, pageWidth / 2, yPosition, { align: 'center' });
-      yPosition += 10;
+    // 브라우저의 인쇄 기능을 사용하여 PDF 생성
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      throw new Error('팝업이 차단되었습니다. 팝업을 허용해주세요.');
     }
     
-    // 자기소개
-    if (cvData.personalInfo.summary) {
-      yPosition += 5;
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.text('자기소개', margin, yPosition);
-      yPosition += 8;
-      
-      doc.setFontSize(11);
-      doc.setFont('helvetica', 'normal');
-      const summaryLines = doc.splitTextToSize(cvData.personalInfo.summary, pageWidth - 2 * margin);
-      doc.text(summaryLines, margin, yPosition);
-      yPosition += summaryLines.length * 6 + 10;
-    }
+    printWindow.document.write(html);
+    printWindow.document.close();
     
-    // 스킬
-    if (cvData.skills.length > 0) {
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.text('스킬', margin, yPosition);
-      yPosition += 8;
-      
-      doc.setFontSize(11);
-      doc.setFont('helvetica', 'normal');
-      const skillsText = cvData.skills.join(', ');
-      doc.text(skillsText, margin, yPosition);
-      yPosition += 15;
-    }
-    
-    // 경력사항
-    if (cvData.experience.length > 0) {
-      addPageIfNeeded(30);
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.text('경력사항', margin, yPosition);
-      yPosition += 8;
-      
-      cvData.experience.forEach((exp, index) => {
-        addPageIfNeeded(40);
-        
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text(`${exp.position} - ${exp.company}`, margin, yPosition);
-        yPosition += 6;
-        
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.text(`${exp.startDate} - ${exp.endDate}`, margin, yPosition);
-        yPosition += 6;
-        
-        if (exp.description) {
-          const descLines = doc.splitTextToSize(exp.description, pageWidth - 2 * margin);
-          doc.text(descLines, margin, yPosition);
-          yPosition += descLines.length * 5 + 5;
+    // CSS 추가 (인쇄용 스타일)
+    const printStyles = `
+      <style>
+        @media print {
+          body { 
+            font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif;
+            -webkit-print-color-adjust: exact;
+            color-adjust: exact;
+          }
+          .no-print { display: none !important; }
+          .page-break { page-break-before: always; }
         }
-        
-        if (index < cvData.experience.length - 1) {
-          yPosition += 5;
+        @page {
+          margin: 0.5in;
+          size: A4;
         }
-      });
-    }
+      </style>
+    `;
     
-    // 교육사항
-    if (cvData.education.length > 0) {
-      addPageIfNeeded(30);
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.text('교육사항', margin, yPosition);
-      yPosition += 8;
-      
-      cvData.education.forEach((edu) => {
-        addPageIfNeeded(20);
-        
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text(`${edu.degree} - ${edu.school}`, margin, yPosition);
-        yPosition += 6;
-        
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.text(`${edu.field} | ${edu.startDate} - ${edu.endDate}`, margin, yPosition);
-        yPosition += 8;
-      });
-    }
+    printWindow.document.head.insertAdjacentHTML('beforeend', printStyles);
     
-    // 프로젝트
-    if (cvData.projects.length > 0) {
-      addPageIfNeeded(30);
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.text('프로젝트', margin, yPosition);
-      yPosition += 8;
-      
-      cvData.projects.forEach((project, index) => {
-        addPageIfNeeded(40);
-        
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text(project.name, margin, yPosition);
-        yPosition += 6;
-        
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        if (project.technologies.length > 0) {
-          doc.text(`기술: ${project.technologies.join(', ')}`, margin, yPosition);
-          yPosition += 6;
-        }
-        
-        doc.text(`${project.startDate} - ${project.endDate}`, margin, yPosition);
-        yPosition += 6;
-        
-        if (project.description) {
-          const descLines = doc.splitTextToSize(project.description, pageWidth - 2 * margin);
-          doc.text(descLines, margin, yPosition);
-          yPosition += descLines.length * 5 + 5;
-        }
-        
-        if (index < cvData.projects.length - 1) {
-          yPosition += 5;
-        }
-      });
-    }
-    
-    // 파일명 생성
-    const fileName = `${cvData.personalInfo.name || 'CV'}_${new Date().toISOString().split('T')[0]}.pdf`;
-    
-    // PDF 다운로드
-    doc.save(fileName);
+    // 인쇄 대화상자 열기
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+    }, 500);
     
   } catch (error) {
     console.error('PDF 생성 실패:', error);
@@ -270,7 +141,7 @@ function generateHTML(cvData: CVData): string {
     <title>${cvData.personalInfo.name || 'CV'}</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
             max-width: 800px;
